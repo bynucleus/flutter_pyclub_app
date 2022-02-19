@@ -1,0 +1,398 @@
+import 'dart:convert';
+
+import 'package:pyclub/model/listePresence.dart';
+import 'package:pyclub/model/mission.dart';
+import 'package:pyclub/model/mission_model.dart';
+import 'package:pyclub/model/note.dart';
+import 'package:pyclub/model/ressource.dart';
+import 'package:pyclub/model/seance.dart';
+import 'package:pyclub/model/user.dart';
+import 'package:pyclub/util/constant.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class HttpService {
+  static var token;
+
+  _getToken() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    token = jsonDecode(localStorage.getString('token'))['token'];
+  }
+
+  static authData(data, apiUrl) async {
+    try {
+      var fullUrl = Uri.parse(API_URL_BASE + apiUrl);
+      return await http.post(fullUrl,
+          body: jsonEncode(data), headers: _setHeaders());
+    } catch (error, stacktrace) {
+      print("Exception trouvée: $error stackTrace: $stacktrace");
+      return false;
+    }
+  }
+
+  getData(apiUrl) async {
+    var fullUrl = Uri.parse(API_URL_BASE + apiUrl);
+
+    try {
+      await _getToken();
+      return await http.get(fullUrl, headers: _setHeaders());
+    } catch (error, stacktrace) {
+      print("Exception trouvée: $error stackTrace: $stacktrace");
+      return false;
+    }
+  }
+
+  static _setHeaders() => {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token'
+      };
+
+  // static var client = http.Client();
+  static Future<List<MissionModel>> fetchMissions() async {
+    print("pff");
+
+    var response =
+        await http.get(Uri.parse("http://192.168.1.14:8181/api/missions"));
+    if (response.statusCode == 200) {
+      var data = response.body;
+      print(data);
+      return missionsModelFromJson(data);
+    } else {
+      // throw Exception();
+      var data = response.body;
+      return missionsModelFromJson(data);
+    }
+  }
+}
+
+// ignore: camel_case_types
+class API_Manager {
+  static Future<List<SeanceModel>> getSeances() async {
+    var client = http.Client();
+    var seances = [];
+
+    try {
+      var response = await client.get(Uri.parse(API_URL_BASE + "seances"));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      print(response.statusCode);
+      seances = SeanceModel.ressourcesFromSnapshot(data);
+      print(seances);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+
+      return seances;
+    }
+
+    return seances;
+  }
+
+  static Future<List<Mission>> getMissions() async {
+    var client = http.Client();
+    var missions = [];
+
+    try {
+      var response = await client.get(Uri.parse(API_URL_BASE + "missions"));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      print(response.statusCode);
+      missions = Mission.missionsFromSnapshot(data);
+      print(missions);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+
+      return missions;
+    }
+
+    return missions;
+  }
+
+  static Future<List<RessourceModel>> getRessources() async {
+    var client = http.Client();
+    var ressources = [];
+
+    try {
+      var response = await client.get(Uri.parse(API_URL_BASE + "ressources"));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      print(response.statusCode);
+      ressources = RessourceModel.ressourcesFromSnapshot(data);
+      print(ressources);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+
+      return ressources;
+    }
+
+    return ressources;
+  }
+
+  static Future<List<UserM>> getUsers() async {
+    var client = http.Client();
+    var users = [];
+
+    try {
+      var response = await client.get(Uri.parse(API_URL_BASE + "users"));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      // print(data.toString());
+      users = UserM.usersFromSnapshot(data);
+      // print(users);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+
+      return users;
+    }
+
+    return users;
+  }
+
+  static Future<UserM> getUserByMail(String mail) async {
+    var client = http.Client();
+    var users;
+
+    try {
+      // print(">>>>>>>>>>>>>");
+      print(Uri.parse(API_URL_BASE + "user?mail=" + mail));
+      var response =
+          await client.get(Uri.parse(API_URL_BASE + "user?mail=" + mail));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+      // print(">>>>>>>>>>>>>");
+
+      print(response.statusCode.toString());
+      users = UserM.fromJson(data);
+      print(users);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      // print(">>>>>>>>>>>>>");
+
+      print(Exception.toString());
+
+      return users;
+    }
+
+    return users;
+  }
+
+  static Future<List<Note>> getNoteBySeance(int id) async {
+    var client = http.Client();
+    var notes;
+
+    try {
+      var response =
+          await client.get(Uri.parse(API_URL_BASE + "note/" + id.toString()));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      print(data.toString());
+      notes = Note.NotesFromSnapshot(data);
+      print(notes);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+
+      return notes;
+    }
+
+    return notes;
+  }
+
+  static Future<List<ListeModel>> geListePBySeance(int id) async {
+    var client = http.Client();
+    var liste = [];
+
+    try {
+      var response =
+          await client.get(Uri.parse(API_URL_BASE + "liste/" + id.toString()));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      print(data.toString());
+      liste = ListeModel.listesFromSnapshot(data);
+      print(liste);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+
+      return liste;
+    }
+
+    return liste;
+  }
+
+  Future<UserM> createUser(String name, String prenom, String email,
+      String niveau, String pass) async {
+    // print(niveau);
+    final response = await http.post(Uri.parse(API_URL_BASE + "users"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "name": name,
+          "prenom": prenom,
+          "email": email,
+          "niveau": niveau,
+          "password": pass,
+        }));
+    // print("fffffffffffffffffff");
+    if (response.statusCode == 201) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return UserM.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to create user.');
+    }
+  }
+
+  static Future<ListeModel> addPresence(String nom, int seance_id) async {
+    // print("creation");
+    final response = await http.post(Uri.parse(API_URL_BASE + "listes"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "nom": nom,
+          "seance_id": seance_id.toString(),
+        }));
+
+    if (response.statusCode == 201) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return ListeModel.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to add presence.');
+    }
+  }
+
+  static Future<Note> addNote(String nom, int seance_id, String contenu) async {
+    // print("creation");
+    final response = await http.post(Uri.parse(API_URL_BASE + "notes"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "nom": nom,
+          "contenu": contenu,
+          "seance_id": seance_id.toString(),
+        }));
+
+    if (response.statusCode == 201) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return Note.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to add presence.');
+    }
+  }
+
+  static Future<UserM> addPcc(int id, String pcc) async {
+    // print("creation");
+    final response = await http.post(Uri.parse(API_URL_BASE + "user/pcc"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "user_id": id.toString(),
+          "pcc": pcc,
+        }));
+
+    if (response.statusCode == 201) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return UserM.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to add pcc.');
+    }
+  }
+   
+    static Future<UserM> setAvatar(int id, String avatar) async {
+    // print("creation");
+    final response = await http.post(Uri.parse(API_URL_BASE + "user/avatar"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "user_id": id.toString(),
+          "avatar": avatar,
+        }));
+
+    if (response.statusCode == 200 || response.statusCode == 201 ) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return UserM.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to add avatar.');
+    }
+  }
+ static Future<SeanceModel> createSeance() async {
+    // print("creation");
+    final response = await http.post(Uri.parse(API_URL_BASE + "seances"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          
+        }));
+
+    if (response.statusCode == 200 || response.statusCode == 201 ) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return SeanceModel.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      throw Exception('Failed to create seance.');
+    }
+  }
+
+
+
+}
