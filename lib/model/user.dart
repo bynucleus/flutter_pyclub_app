@@ -24,7 +24,7 @@ class UserM {
         prenom: json["prenom"],
         niveau: json["niveau"],
         email: json["email"],
-        pcc: json["pcc"],
+        pcc: json["pcc"].toString(),
         profileImage: json["profileImage"],
       );
 

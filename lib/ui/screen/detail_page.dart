@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ndialog/ndialog.dart';
 import 'package:pyclub/model/listePresence.dart';
 import 'package:pyclub/model/note.dart';
 import 'package:pyclub/model/seance.dart';
@@ -20,7 +21,7 @@ class _DetailPageState extends State<DetailPage> {
   bool _isLoading = true;
   List<ListeModel> _liste;
   bool _isLoadingListe = true;
-
+  String texte = "";
   @override
   void initState() {
     // TODO: implement initState
@@ -39,6 +40,21 @@ class _DetailPageState extends State<DetailPage> {
       _isLoading = false;
       _isLoadingListe = false;
     });
+  }
+
+  Future<void> sendEtRefresh(String contenu) async {
+    ProgressDialog progressDialog = ProgressDialog(
+      context,
+      dismissable: false,
+      title: const Text('Traitement'),
+      message: const Text('en cours ...'),
+    );
+    progressDialog.show();
+
+    await API_Manager.addNote(Info.nom, widget.seance.id, contenu);
+    print(contenu);
+    await getData();
+    progressDialog.dismiss();
   }
 
   @override
@@ -104,9 +120,11 @@ class _DetailPageState extends State<DetailPage> {
                       color: Colors.white,
                       onPressed: () {
                         showDialog(
+                            // barrierDismissible: false,
                             context: context,
                             builder: (BuildContext context) {
-                              final contenu = TextEditingController();
+                              final contenu =
+                                  TextEditingController(text: texte);
                               return AlertDialog(
                                 content: Stack(
                                   overflow: Overflow.visible,
@@ -132,6 +150,9 @@ class _DetailPageState extends State<DetailPage> {
                                           Padding(
                                             padding: EdgeInsets.all(5.0),
                                             child: TextField(
+                                              onChanged: (text) {
+                                                texte = text;
+                                              },
                                               controller: contenu,
                                               maxLines: 5,
                                               keyboardType:
@@ -145,14 +166,13 @@ class _DetailPageState extends State<DetailPage> {
                                             padding: const EdgeInsets.all(8.0),
                                             child: RaisedButton(
                                               child: Text("Valider"),
-                                              onPressed: () {
-                                                API_Manager.addNote(
-                                                    Info.nom,
-                                                    widget.seance.id,
-                                                    contenu.text);
-                                                print(contenu.text);
-                                                getData();
-                                                Navigator.pop(context, false);
+                                              onPressed: () async {
+                                                Navigator.pop(context, true);
+                                                contenu.text != ""
+                                                    ? sendEtRefresh(
+                                                        contenu.text)
+                                                    : null;
+
                                                 // if (_formKey.currentState.validate()) {
                                                 //   _formKey.currentState.save();
                                                 // }
@@ -316,7 +336,7 @@ class _DetailPageState extends State<DetailPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  note?.date ?? " ",
+                  note?.date ?? "h ",
                   style: Theme.of(context).textTheme.headline4.copyWith(
                         fontSize: 10,
                         // fontWeight: FontWeight.w400,

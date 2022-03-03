@@ -618,7 +618,7 @@ class _AuthPageState extends State<AuthPage> {
     String email = textfieldsStrings[2];
     String mp = textfieldsStrings[3];
     String niveau = textfieldsStrings[4];
-    if (!["anelda", "sminth", "pymiage", "nucleus", "pyclub"]
+    if (!["anelda", "imelda","sminth", "pymiage", "nucleus", "pyclub"]
         .contains(textfieldsStrings[5])) {
       buildSnackError(
         'Code invalide',

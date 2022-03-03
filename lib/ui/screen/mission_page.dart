@@ -72,7 +72,7 @@ class _MissionPageState extends State<MissionPage> {
                       style: Theme.of(context).textTheme.headline4,
                     ),
                     SvgPicture.asset(
-                      scan,
+                      filter,
                       color: Theme.of(context).iconTheme.color,
                       width: 18,
                     ),
@@ -213,7 +213,7 @@ Widget _contentServices(BuildContext context, List missionsList) {
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 5, right: 5),
-                            margin: EdgeInsets.only(bottom: 15,top: 25),
+                            margin: EdgeInsets.only(bottom: 15, top: 25),
                             height: 50,
                             width: MediaQuery.of(context).size.width / 1.5,
                             child: Center(

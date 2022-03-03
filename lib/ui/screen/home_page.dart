@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:pyclub/model/seance.dart';
 import 'package:pyclub/model/user.dart';
 import 'package:pyclub/services/http_service.dart';
@@ -23,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   List<SeanceModel> _seances;
   bool _isLoadingUserList = true;
   bool _isLoadingSeanceList = true;
-
+  String pcc ;
   Widget buildMovieShimmer() => CustomWidget.rectangular(width: 80);
 
   @override
@@ -53,86 +55,131 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> getData() async {
+    setState(() {
+      pcc=Info.pcc;
+      _isLoadingUserList = true;
+      _isLoadingSeanceList = true;
+    });
     _users = await API_Manager.getUsers();
     _seances = await API_Manager.getSeances();
 
     setState(() {
+       pcc=Info.pcc;
       _isLoadingUserList = false;
       _isLoadingSeanceList = false;
     });
   }
 
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  void _onRefresh() async {
+    // monitor network fetch
+    print("ok");
+    await getData();
+    // await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+
+    _refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _contentHeader(),
-              const SizedBox(
-                height: 30,
-              ),
-              Text(
-                'Progression',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              _contentOverView(),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Autres membres',
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                  SvgPicture.asset(
-                    scan,
-                    color: Theme.of(context).iconTheme.color,
-                    width: 18,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _isLoadingUserList
-                  ? Center(child: CircularProgressIndicator())
-                  : _contentSendMoney(context, _users),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Seances',
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                  SvgPicture.asset(
-                    filter,
-                    color: Theme.of(context).iconTheme.color,
-                    width: 18,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              _isLoadingSeanceList
-                  ? Center(child: CircularProgressIndicator())
-                  : _contentServices(context, _seances),
-            ],
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: SmartRefresher(
+          enablePullDown: true,
+          enablePullUp: true,
+          header: WaterDropHeader(),
+          footer: CustomFooter(
+            builder: (BuildContext context, LoadStatus mode) {
+              Widget body;
+              if (mode == LoadStatus.idle) {
+                body = Text("pull up load");
+              } else if (mode == LoadStatus.loading) {
+                body = CupertinoActivityIndicator();
+              } else if (mode == LoadStatus.failed) {
+                body = Text("Load Failed!Click retry!");
+              } else if (mode == LoadStatus.canLoading) {
+                body = Text("release to load more");
+              } else {
+                body = Text("No more Data");
+              }
+              return Container(
+                height: 55.0,
+                child: Center(child: body),
+              );
+            },
           ),
-        ),
-      ),
-    );
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          // onLoading: _onLoading,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _contentHeader(),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Text(
+                    'Progression',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  _contentOverView(),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Autres membres',
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                      SvgPicture.asset(
+                        recive,
+                        color: Theme.of(context).iconTheme.color,
+                        width: 18,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  _isLoadingUserList
+                      ? Center(child: CircularProgressIndicator())
+                      : _contentSendMoney(context, _users),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Seances',
+                        style: Theme.of(context).textTheme.headline4,
+                      ),
+                      SvgPicture.asset(
+                        filter,
+                        color: Theme.of(context).iconTheme.color,
+                        width: 18,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  _isLoadingSeanceList
+                      ? Center(child: CircularProgressIndicator())
+                      : _contentServices(context, _seances),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget _contentHeader() {
@@ -194,7 +241,7 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                Info.pcc ?? '' + ' pcc',
+                pcc ?? '' + ' pcc',
                 style: Theme.of(context).textTheme.headline5,
               ),
               const SizedBox(

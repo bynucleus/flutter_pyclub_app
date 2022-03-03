@@ -4,7 +4,7 @@ import 'dart:convert';
 
 class Note {
   int id;
-  int seanceid;
+  String seanceid;
   String titre;
   String nom;
   String contenu;

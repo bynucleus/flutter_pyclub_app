@@ -19,6 +19,7 @@ dependencies:
   splash_screen_view:
   shared_preferences: any
   select_dialog: any
+  barcode_scan: any
   shimmer: any
   # connectivity_plus: any
   flutter_bloc: any
@@ -34,8 +35,11 @@ dependencies:
   dio: ^4.0.4
   http: ^0.13.3
   fluttertoast: ^8.0.8
+  giffy_dialog: any
   # firebase_database:
   dart_eval: ^0.0.4
+  font_awesome_flutter: ^9.2.0
+  numberpicker: ^2.1.1
   # device_preview: ^1.0.0
 dev_dependencies:
   change_app_package_name: ^1.0.0

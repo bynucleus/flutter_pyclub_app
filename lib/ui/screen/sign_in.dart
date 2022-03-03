@@ -46,7 +46,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
             Expanded(
               flex: 2,
-              child: Padding(
+              child: SingleChildScrollView(child: Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -55,7 +55,7 @@ class _SignInPageState extends State<SignInPage> {
                     _centerContent(),
                     _bottomContent()
                   ],
-                ),
+                ),),
               ),
             ),
           ],

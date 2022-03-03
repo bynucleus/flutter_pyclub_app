@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
 
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pyclub/model/listePresence.dart';
 import 'package:pyclub/model/mission.dart';
 import 'package:pyclub/model/mission_model.dart';
@@ -215,9 +217,9 @@ class API_Manager {
       var jsonString = response.body;
       var data = json.decode(jsonString);
 
-      print(data.toString());
+      print("----------->" + data.toString());
       notes = Note.NotesFromSnapshot(data);
-      print(notes);
+      // print("----------->" + notes);
 
       // for(var i in data)
       //   newsModel = NewsModel.fromJson(jsonMap);
@@ -350,8 +352,40 @@ class API_Manager {
       throw Exception('Failed to add pcc.');
     }
   }
+
+  static Future<UserM> retPcc(int id, int pcc, String nom, int qte) async {
+    // print("creation");
+    var ok = await setAchat(nom, qte);
+    if(ok){
+ final response = await http.post(Uri.parse(API_URL_BASE + "user/retpcc"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          "user_id": id.toString(),
+          "pcc": pcc.toString(),
+        }));
+
    
-    static Future<UserM> setAvatar(int id, String avatar) async {
+   
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      // If the server did return a 201 CREATED response,
+      // then parse the JSON.
+      return UserM.fromJson(jsonDecode(response.body));
+    } else {
+      // If the server did not return a 201 CREATED response,
+      // then throw an exception.
+      // Fluttertoast.showToast(msg: "error");
+      throw Exception("Echec de l'achat.");
+    }
+     }
+     else{
+      throw Exception("Echec de l'achat.");
+
+     }
+  }
+
+  static Future<UserM> setAvatar(int id, String avatar) async {
     // print("creation");
     final response = await http.post(Uri.parse(API_URL_BASE + "user/avatar"),
         headers: <String, String>{
@@ -362,7 +396,7 @@ class API_Manager {
           "avatar": avatar,
         }));
 
-    if (response.statusCode == 200 || response.statusCode == 201 ) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // If the server did return a 201 CREATED response,
       // then parse the JSON.
       return UserM.fromJson(jsonDecode(response.body));
@@ -372,17 +406,16 @@ class API_Manager {
       throw Exception('Failed to add avatar.');
     }
   }
- static Future<SeanceModel> createSeance() async {
+
+  static Future<SeanceModel> createSeance() async {
     // print("creation");
     final response = await http.post(Uri.parse(API_URL_BASE + "seances"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode(<String, String>{
-          
-        }));
+        body: jsonEncode(<String, String>{}));
 
-    if (response.statusCode == 200 || response.statusCode == 201 ) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
       // If the server did return a 201 CREATED response,
       // then parse the JSON.
       return SeanceModel.fromJson(jsonDecode(response.body));
@@ -393,6 +426,17 @@ class API_Manager {
     }
   }
 
+  static Future<bool> setAchat(String nom, int qte) async {
+    try {
+      var response = await http.get(
+          Uri.parse(API_URL_BASE + "setAchat/" + nom + "/" + qte.toString()));
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+      return true;
+    } catch (Exception) {
+      print(Exception);
 
-
+      return false;
+    }
+  }
 }

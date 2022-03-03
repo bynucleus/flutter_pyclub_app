@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:frefresh/frefresh.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:pyclub/model/ressource.dart';
 import 'package:pyclub/services/http_service.dart';
 import 'package:pyclub/util/constant.dart';
@@ -35,48 +38,106 @@ class _RessourcePageState extends State<RessourcePage> {
     });
   }
 
+  void _onRefresh() async {
+    // monitor network fetch
+    print("ok");
+    await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    _ressource = await API_Manager.getRessources();
+    setState(() {
+      _isLoading = false;
+    });
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    print("odd");
+
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    _ressource = await API_Manager.getRessources();
+    setState(() {
+      _isLoading = false;
+    });
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    // items.add((items.length+1).toString());
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
+  /// Create a controller
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _contentHeader(),
-              const SizedBox(
-                height: 30,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Ressouces partagées ...',
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
-                  // SvgPicture.asset(
-                  //   scan,
-                  //   color: Theme.of(context).iconTheme.color,
-                  //   width: 18,
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const SizedBox(
-                height: 30,
-              ),
-              _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : _contentServices(context, _ressource),
-            ],
+      body: SmartRefresher(
+        enablePullDown: true,
+        enablePullUp: true,
+        header: WaterDropHeader(),
+        footer: CustomFooter(
+          builder: (BuildContext context, LoadStatus mode) {
+            Widget body;
+            if (mode == LoadStatus.idle) {
+              body = Text("pull up load");
+            } else if (mode == LoadStatus.loading) {
+              body = CupertinoActivityIndicator();
+            } else if (mode == LoadStatus.failed) {
+              body = Text("Load Failed!Click retry!");
+            } else if (mode == LoadStatus.canLoading) {
+              body = Text("release to load more");
+            } else {
+              body = Text("No more Data");
+            }
+            return Container(
+              height: 55.0,
+              child: Center(child: body),
+            );
+          },
+        ),
+        controller: _refreshController,
+        onRefresh: _onRefresh,
+        // onLoading: _onLoading,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _contentHeader(),
+                const SizedBox(
+                  height: 30,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Ressouces partagées ...',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                    // SvgPicture.asset(
+                    //   scan,
+                    //   color: Theme.of(context).iconTheme.color,
+                    //   width: 18,
+                    // ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const SizedBox(
+                  height: 30,
+                ),
+                _isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : _contentServices(context, _ressource),
+              ],
+            ),
           ),
         ),
       ),
