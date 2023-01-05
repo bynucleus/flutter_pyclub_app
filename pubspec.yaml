@@ -1,7 +1,7 @@
-name: pyclub
+name: myclub
 
-description: Appli conçu pour les membres du club python de la filère Miage de l'UFHB.
-version: 1.0.1+1
+description: Appli conçu pour les membres des clubs de la filère Miage de l'UFHB.
+version: 1.0.1+2
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -19,7 +19,8 @@ dependencies:
   splash_screen_view:
   shared_preferences: any
   select_dialog: any
-  barcode_scan: any
+  # barcode_scan: any
+  select_form_field: "^2.2.0"
   shimmer: any
   # connectivity_plus: any
   flutter_bloc: any
@@ -40,6 +41,7 @@ dependencies:
   dart_eval: ^0.0.4
   font_awesome_flutter: ^9.2.0
   numberpicker: ^2.1.1
+  google_mobile_ads: ^2.3.0
   # device_preview: ^1.0.0
 dev_dependencies:
   change_app_package_name: ^1.0.0
@@ -48,7 +50,7 @@ dev_dependencies:
     sdk: flutter
 
 flutter_icons:
-  image_path: "assets/images/py_logo.png" 
+  image_path: "assets/images/myclub.png" 
   android: true
   ios: true
   # optionally, as transparency is not allowed on app store

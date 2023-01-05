@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:pyclub/model/ressource.dart';
-import 'package:pyclub/model/user.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/file_path.dart';
+import 'package:myclub/model/ressource.dart';
+import 'package:myclub/model/user.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/file_path.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -136,7 +136,7 @@ class _ListePageState extends State<ListePage> {
         Row(
           children: <Widget>[
             Image.asset(
-              "assets/images/py_logo.png",
+              "assets/images/myclubmini.png",
               width: 30, height: 30,
               // height: MediaQuery.of(context).size.width / 2,
             ),
@@ -194,10 +194,11 @@ Widget _contentServices(BuildContext context, List list) {
                     child: ListTile(
                       // trailing: Icon(Icons.add),
                       title: Text(
-                       value["nom"]+
+                        value["nom"] +
                             " - " +
                             value["qte"] +
-                            " jus - ${int.parse(value['qte']) * 100} f\n"+ value["created_at"] ,
+                            " jus - ${int.parse(value['qte']) * 100} f\n" +
+                            value["created_at"],
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyText1,
                       ),

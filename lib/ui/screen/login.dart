@@ -1,12 +1,12 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
-
+import 'package:select_form_field/select_form_field.dart';
 import 'package:flutter/material.dart';
-// import 'package:pyclub/model/user.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/ui/screen/drawer_page.dart';
+// import 'package:myclub/model/user.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/ui/screen/drawer_page.dart';
 
-import 'package:pyclub/ui/widgets/button_widget.dart';
+import 'package:myclub/ui/widgets/button_widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ndialog/ndialog.dart';
@@ -24,22 +24,57 @@ class _AuthPageState extends State<AuthPage> {
 
   List textfieldsStrings = [
     "", //firstName
-    "", //prenom
     "", //email
     "", //password
-    "", //confirmPassword
+    "", //club
+    // "", //confirmPassword
     "", //niveau
     "", //code acces
   ];
   String errorMessage;
   final _firstnamekey = GlobalKey<FormState>();
-  final _lastNamekey = GlobalKey<FormState>();
+  // final _lastNamekey = GlobalKey<FormState>();
   final _emailKey = GlobalKey<FormState>();
   final _passwordKey = GlobalKey<FormState>();
-  final _confirmPasswordKey = GlobalKey<FormState>();
+  final _club = GlobalKey<FormState>();
+  // final _confirmPasswordKey = GlobalKey<FormState>();
   final _niveau = GlobalKey<FormState>();
   final _codeacceskey = GlobalKey<FormState>();
   // final _auth = FirebaseAuth.instance;
+
+final List<Map<String, dynamic>> _items = [
+  {
+    'value': 'python',
+    'label': 'Club Python',
+    'icon': Icon(Icons.stop),
+  },
+  {
+    'value': 'java',
+    'label': 'Club Java',
+    'icon': Icon(Icons.stop),
+
+    // 'icon': Icon(Icons.fiber_manual_record),
+    // 'textStyle': TextStyle(color: Colors.red),
+  },
+  {
+    'value': 'web',
+    'label': 'Club Web',
+    'icon': Icon(Icons.stop),
+
+    // 'enable': false,
+    // 'icon': Icon(Icons.grade),
+  },
+
+   {
+    'value': 'arduino',
+    'label': 'Club IOT & Arduino',
+    'icon': Icon(Icons.stop),
+
+    // 'enable': false,
+    // 'icon': Icon(Icons.grade),
+  },
+  
+];
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +140,7 @@ class _AuthPageState extends State<AuthPage> {
                       ),
                       widget.register
                           ? buildTextField(
-                              "Nom",
+                              "Nom & prenons",
                               Icons.person_outlined,
                               false,
                               size,
@@ -125,28 +160,7 @@ class _AuthPageState extends State<AuthPage> {
                               isDarkMode,
                             )
                           : Container(),
-                      widget.register
-                          ? buildTextField(
-                              "Prenom",
-                              Icons.person_outlined,
-                              false,
-                              size,
-                              (valuesurname) {
-                                if (valuesurname.length <= 2) {
-                                  buildSnackError(
-                                    'Invalide Prenom > 2',
-                                    context,
-                                    size,
-                                  );
-                                  return '';
-                                }
-                                return null;
-                              },
-                              _lastNamekey,
-                              1,
-                              isDarkMode,
-                            )
-                          : Container(),
+
                       Form(
                         child: buildTextField(
                           "Email",
@@ -175,7 +189,7 @@ class _AuthPageState extends State<AuthPage> {
                             return null;
                           },
                           _emailKey,
-                          2,
+                          1,
                           isDarkMode,
                         ),
                       ),
@@ -197,34 +211,58 @@ class _AuthPageState extends State<AuthPage> {
                             return null;
                           },
                           _passwordKey,
-                          3,
+                          2,
                           isDarkMode,
                         ),
                       ),
-                      Form(
-                        child: widget.register
-                            ? buildTextField(
-                                "Confirmation Passsword",
-                                Icons.lock_outline,
-                                true,
-                                size,
-                                (valuepassword) {
-                                  if (valuepassword != textfieldsStrings[3]) {
-                                    buildSnackError(
-                                      'les mots de passe ne correspondent pas',
-                                      context,
-                                      size,
-                                    );
-                                    return '';
-                                  }
-                                  return null;
-                                },
-                                _confirmPasswordKey,
-                                3,
-                                isDarkMode,
-                              )
-                            : Container(),
-                      ),
+                      // Form(
+                      //   child: widget.register
+                      //       ? buildTextField(
+                      //           "Confirmation Passsword",
+                      //           Icons.lock_outline,
+                      //           true,
+                      //           size,
+                      //           (valuepassword) {
+                      //             if (valuepassword != textfieldsStrings[3]) {
+                      //               buildSnackError(
+                      //                 'les mots de passe ne correspondent pas',
+                      //                 context,
+                      //                 size,
+                      //               );
+                      //               return '';
+                      //             }
+                      //             return null;
+                      //           },
+                      //           _confirmPasswordKey,
+                      //           3,
+                      //           isDarkMode,
+                      //         )
+                      //       : Container(),
+                      // ),
+
+                      widget.register
+                          ? buildTextField(
+                              "Club",
+                              Icons.grade,
+                              false,
+                              size,
+                              (valueclub) {
+                                if (valueclub.length <= 2) {
+                                  buildSnackError(
+                                    'Invalide club > 2',
+                                    context,
+                                    size,
+                                  );
+                                  return '';
+                                }
+                                return null;
+                              },
+                              _club,
+                              3,
+                              isDarkMode,
+                              true,
+                            )
+                          : Container(),
                       Form(
                         child: widget.register
                             ? buildTextField(
@@ -254,7 +292,7 @@ class _AuthPageState extends State<AuthPage> {
                                     "sminth",
                                     "pymiage",
                                     "nucleus",
-                                    "pyclub"
+                                    "myclub"
                                   ].contains(valuescode)) {
                                     buildSnackError(
                                       'Code invalide',
@@ -308,7 +346,7 @@ class _AuthPageState extends State<AuthPage> {
                                           ),
                                         ),
                                         TextSpan(
-                                          text: " de pyclub ",
+                                          text: " de myclub ",
                                           style: TextStyle(
                                             color: const Color(0xffADA4A5),
                                             fontSize: size.height * 0.015,
@@ -369,23 +407,23 @@ class _AuthPageState extends State<AuthPage> {
                             if (widget.register) {
                               //validation for register
                               if (_firstnamekey.currentState.validate()) {
-                                if (_lastNamekey.currentState.validate()) {
-                                  if (_emailKey.currentState.validate()) {
-                                    if (_passwordKey.currentState.validate()) {
-                                      if (_confirmPasswordKey.currentState
-                                          .validate()) {
-                                        if (checkedValue == false) {
-                                          buildSnackError(
-                                              'Accepte le réglément interieur',
-                                              context,
-                                              size);
-                                        } else {
-                                          register();
-                                          print('Inscription');
-                                        }
+                                if (_emailKey.currentState.validate()) {
+                                  if (_passwordKey.currentState.validate()) {
+                                    if (_club.currentState.validate()) {
+                                      // if (_confirmPasswordKey.currentState
+                                      //     .validate()) {
+                                      if (checkedValue == false) {
+                                        buildSnackError(
+                                            'Accepte le réglément interieur',
+                                            context,
+                                            size);
+                                      } else {
+                                        register();
+                                        print('Inscription');
                                       }
                                     }
                                   }
+                                  // }
                                 }
                               }
                             } else {
@@ -412,7 +450,7 @@ class _AuthPageState extends State<AuthPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'pyLogin',
+                              'MyLogin',
                               style: GoogleFonts.poppins(
                                 color: isDarkMode ? Colors.white : Colors.black,
                                 fontSize: size.height * 0.045,
@@ -518,6 +556,7 @@ class _AuthPageState extends State<AuthPage> {
     Key key,
     int stringToEdit,
     bool isDarkMode,
+    [bool isselect=false]
   ) {
     return Padding(
       padding: EdgeInsets.only(top: size.height * 0.025),
@@ -530,7 +569,19 @@ class _AuthPageState extends State<AuthPage> {
         ),
         child: Form(
           key: key,
-          child: TextFormField(
+          child: 
+          isselect?
+          SelectFormField(
+  type: SelectFormFieldType.dialog, // or can be dialog
+  initialValue: 'python',
+  icon: Icon(Icons.format_shapes),
+   
+  // labelText: 'Club',
+  items: _items,
+  onChanged: (val) => textfieldsStrings[stringToEdit] = val,
+  onSaved: (val) => print(val),
+):
+          TextFormField(
             style: TextStyle(
                 color: isDarkMode ? const Color(0xffADA4A5) : Colors.black),
             onChanged: (value) {
@@ -586,6 +637,7 @@ class _AuthPageState extends State<AuthPage> {
                   : null,
             ),
           ),
+      
         ),
       ),
     );
@@ -610,15 +662,18 @@ class _AuthPageState extends State<AuthPage> {
   register() async {
     ProgressDialog progressDialog = ProgressDialog(
       context,
-      title: const Text('Pyclub register'),
+      title: const Text('MyClub register'),
       message: const Text('en cours ...'),
     );
     String name = textfieldsStrings[0];
-    String prenom = textfieldsStrings[1];
-    String email = textfieldsStrings[2];
-    String mp = textfieldsStrings[3];
+    String email = textfieldsStrings[1];
+    String mp = textfieldsStrings[2];
+    String club = textfieldsStrings[3];
     String niveau = textfieldsStrings[4];
-    if (!["anelda", "imelda","sminth", "pymiage", "nucleus", "pyclub"]
+    print(email);
+    print(mp);
+    print(club);
+    if (!["anelda", "imelda", "sminth", "pymiage", "nucleus", "myclub"]
         .contains(textfieldsStrings[5])) {
       buildSnackError(
         'Code invalide',
@@ -629,39 +684,38 @@ class _AuthPageState extends State<AuthPage> {
     }
     progressDialog.show();
 
- var data = {
-                'name': name,
-                'prenom': prenom,
-                'pcc': "0",
-                'niveau': niveau,
-                'email': email,
-                'password': mp,
-                'profileImage' : "images/avator1.svg",
-              };
-              var res = await HttpService.authData(data, 'users');
-              // print(res.toString());
-              if (res == false) {
-                Fluttertoast.showToast(
-                    msg: "une erreur est survenu, merci de ressayer");
-              } else {
-                var body = json.decode(res.body);
-                print(body.toString());
+    var data = {
+      'name': name,
+      'pcc': "50",
+      'niveau': niveau,
+      'email': email,
+      'password': mp,
+      'club': club,
+      'profileImage': "images/avator1.svg",
+    };
+    var res = await HttpService.authData(data, 'users');
+    print(res.toString());
+    if (res == false) {
+      Fluttertoast.showToast(msg: "une erreur est survenu, merci de ressayer");
+    } else {
+      var body = json.decode(res.body);
+      print(body.toString());
 
-                if (body['success']) {
-                  SharedPreferences localStorage =
-                      await SharedPreferences.getInstance();
-                  localStorage.setString('token', json.encode(body['token']));
-                  localStorage.setString('user', json.encode(body['user']));
-                  localStorage.setString(
-                      'email', json.encode(body['user']['email']));
-                  progressDialog.dismiss();
+      if (body['success']) {
+        SharedPreferences localStorage = await SharedPreferences.getInstance();
+        localStorage.setString('token', json.encode(body['token']));
+        localStorage.setString('user', json.encode(body['user']));
+        localStorage.setString('email', json.encode(body['user']['email']));
+        localStorage.setString('club', json.encode(body['user']['club']));
+        localStorage.setString('pcc', json.encode(body['user']['pcc']));
+        progressDialog.dismiss();
 
-                  Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => DrawerPage()));
-                } else {
-                  Fluttertoast.showToast(msg: body['message']);
-                }
-              }
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => DrawerPage()));
+      } else {
+        Fluttertoast.showToast(msg: body['message']);
+      }
+    }
     /*try {
       // FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -669,7 +723,7 @@ class _AuthPageState extends State<AuthPage> {
           email: textfieldsStrings[2], password: textfieldsStrings[3]);
 
       if (userCredential.user != null) {
-        API_Manager().createUser(name, prenom, email, niveau, mp);
+        API_Manager().createUser(name, club, email, niveau, mp);
 
         progressDialog.dismiss();
 
@@ -697,14 +751,14 @@ class _AuthPageState extends State<AuthPage> {
   Future<void> login() async {
     ProgressDialog progressDialog = ProgressDialog(
       context,
-      title: const Text('Pyclub login'),
+      title: const Text('MyClub login'),
       message: const Text('en cours ...'),
     );
 
     progressDialog.show();
 
-    String email = textfieldsStrings[2];
-    String mp = textfieldsStrings[3];
+    String email = textfieldsStrings[1];
+    String mp = textfieldsStrings[2];
     if (email.isNotEmpty) {
       if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(email)) {
         ScaffoldMessenger.of(context)
@@ -737,6 +791,9 @@ class _AuthPageState extends State<AuthPage> {
                   localStorage.setString('user', json.encode(body['user']));
                   localStorage.setString(
                       'email', json.encode(body['user']['email']));
+                  localStorage.setString('club', json.encode(body['user']['club']));
+        localStorage.setString('pcc', json.encode(body['user']['pcc']));
+
                   progressDialog.dismiss();
 
                   Navigator.of(context).pushReplacement(
@@ -750,7 +807,7 @@ class _AuthPageState extends State<AuthPage> {
               //     .then((uid) => {
               //           // print("----------------"),
               //           // print(uid.user),
-              //           // API_Manager().createUser(name, prenom, email, mp),
+              //           // API_Manager().createUser(name, club, email, mp),
               //           progressDialog.dismiss(),
               //           Fluttertoast.showToast(msg: "vous êtes bien connecté"),
               //           Navigator.of(context).pushReplacement(MaterialPageRoute(

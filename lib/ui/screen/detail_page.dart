@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ndialog/ndialog.dart';
-import 'package:pyclub/model/listePresence.dart';
-import 'package:pyclub/model/note.dart';
-import 'package:pyclub/model/seance.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/info.dart';
+import 'package:myclub/model/listePresence.dart';
+import 'package:myclub/model/note.dart';
+import 'package:myclub/model/seance.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/info.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class DetailPage extends StatefulWidget {
@@ -72,7 +72,7 @@ class _DetailPageState extends State<DetailPage> {
                 height: 30,
               ),
               Text(
-                'resumé de la seance fait par vous et pour vous !',
+                'resumé de la seance fait par vous et pour vous',
                 style: Theme.of(context).textTheme.headline4,
               ),
               const SizedBox(
@@ -127,7 +127,7 @@ class _DetailPageState extends State<DetailPage> {
                                   TextEditingController(text: texte);
                               return AlertDialog(
                                 content: Stack(
-                                  overflow: Overflow.visible,
+                                  // overflow: Overflow.visible,
                                   children: <Widget>[
                                     Positioned(
                                       right: -40.0,
@@ -164,7 +164,7 @@ class _DetailPageState extends State<DetailPage> {
                                           ),
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: RaisedButton(
+                                            child: ElevatedButton(
                                               child: Text("Valider"),
                                               onPressed: () async {
                                                 Navigator.pop(context, true);
@@ -226,21 +226,21 @@ class _DetailPageState extends State<DetailPage> {
                                     title: Text(value.nom ?? " "),
                                     trailing: Text(value.date ?? " "),
                                   ),
-                                Center(
-                                  child: RaisedButton(
-                                      child: Text('Marquer ma presence'),
-                                      // style: ButtonStyle(backgroundColor:  COLOR_BACKGROUND),
-                                      onPressed: () {
-                                        API_Manager.addPresence(
-                                            Info.nom, widget.seance.id);
-                                        Fluttertoast.showToast(
-                                            msg:
-                                                "votre presence à bien été marqué !");
-                                        Navigator.pop(context, false);
-                                        // Navigator.pop(context, false);
-                                        getData();
-                                      }),
-                                ),
+                                // Center(
+                                //   child: ElevatedButton(
+                                //       child: Text('Marquer ma presence'),
+                                //       // style: ButtonStyle(backgroundColor:  COLOR_BACKGROUND),
+                                //       onPressed: () {
+                                //         API_Manager.addPresence(
+                                //             Info.nom, widget.seance.id);
+                                //         Fluttertoast.showToast(
+                                //             msg:
+                                //                 "votre presence à bien été marqué !");
+                                //         Navigator.pop(context, false);
+                                //         // Navigator.pop(context, false);
+                                //         getData();
+                                //       }),
+                                // ),
                                 ListTile(
                                   title: Text(""),
                                 ),
@@ -253,7 +253,7 @@ class _DetailPageState extends State<DetailPage> {
                       // width: 50,
                       child: Center(
                         child: Text(
-                          'liste de sa presence',
+                          'liste de presence',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

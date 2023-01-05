@@ -1,13 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pyclub/controller/mission_controller.dart';
-import 'package:pyclub/model/mission.dart';
-import 'package:pyclub/model/mission_model.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/file_path.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:myclub/controller/mission_controller.dart';
+import 'package:myclub/model/mission.dart';
+import 'package:myclub/model/mission_model.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/file_path.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MissionPage extends StatefulWidget {
@@ -21,6 +24,41 @@ class _MissionPageState extends State<MissionPage> {
   // MissionController  missionController = Get.put(MissionController());
   List<Mission> _missions;
   bool _isLoading = true;
+  BannerAd myBanner;
+  bool isloaded = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    myBanner = BannerAd(
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        // Called when an ad is successfully received.
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            isloaded = true;
+          });
+          print('Ad loaded.');
+        },
+        // Called when an ad request failed.
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          // Dispose the ad here to free resources.
+          ad.dispose();
+          print('Ad failed to load: $error');
+        },
+        // Called when an ad opens an overlay that covers the screen.
+        onAdOpened: (Ad ad) => print('Ad opened.'),
+        // Called when an ad removes an overlay that covers the screen.
+        onAdClosed: (Ad ad) => print('Ad closed.'),
+        // Called when an impression occurs on the ad.
+        onAdImpression: (Ad ad) => print('Ad impression.'),
+      ),
+    );
+
+    myBanner.load();
+  }
 
   @override
   void initState() {
@@ -39,59 +77,125 @@ class _MissionPageState extends State<MissionPage> {
     });
   }
 
+  void _onRefresh() async {
+    // monitor network fetch
+    print("ok");
+    await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    await getMissions();
+    setState(() {
+      _isLoading = false;
+    });
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    print("odd");
+
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    await getMissions();
+    // _ressource = await API_Manager.getRessources();
+    setState(() {
+      _isLoading = false;
+    });
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    // items.add((items.length+1).toString());
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
+
+  /// Create a controller
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
-        body: Padding(
-          padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _contentHeader(),
-                const SizedBox(
-                  height: 30,
-                ),
-                // Text(
-                //   'Une mission, un acquis !',
-                //   style: Theme.of(context).textTheme.headline4,
-                // ),
-                const SizedBox(
-                  height: 16,
-                ),
-                _contentOverView(),
-                const SizedBox(
-                  height: 30,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: true,
+            header: WaterDropHeader(),
+            footer: CustomFooter(
+              builder: (BuildContext context, LoadStatus mode) {
+                Widget body;
+                if (mode == LoadStatus.idle) {
+                  body = Text("pull up load");
+                } else if (mode == LoadStatus.loading) {
+                  body = CupertinoActivityIndicator();
+                } else if (mode == LoadStatus.failed) {
+                  body = Text("Load Failed!Click retry!");
+                } else if (mode == LoadStatus.canLoading) {
+                  body = Text("release to load more");
+                } else {
+                  body = Text("No more Data");
+                }
+                return Container(
+                  height: 55.0,
+                  child: Center(child: body),
+                );
+              },
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            // onLoading: _onLoading,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'Historique',
-                      style: Theme.of(context).textTheme.headline4,
+                    _contentHeader(),
+                    const SizedBox(
+                      height: 30,
                     ),
-                    SvgPicture.asset(
-                      filter,
-                      color: Theme.of(context).iconTheme.color,
-                      width: 18,
+                    // Text(
+                    //   'Une mission, un acquis !',
+                    //   style: Theme.of(context).textTheme.headline4,
+                    // ),
+                    const SizedBox(
+                      height: 16,
                     ),
+                    _contentOverView(),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Historique',
+                          style: Theme.of(context).textTheme.headline4,
+                        ),
+                        SvgPicture.asset(
+                          filter,
+                          color: Theme.of(context).iconTheme.color,
+                          width: 18,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : _contentServices(context, _missions),
+
+                    isloaded
+                        ? Container(
+                            height: 50,
+                            child: AdWidget(
+                              ad: myBanner,
+                            ))
+                        : SizedBox(),
+                    // missionController.isLoading.value
+                    //     ? Obx(()=>_contentServices(context, missionController.missionList))
+                    //     : Center(child: CircularProgressIndicator())
                   ],
                 ),
-                const SizedBox(height: 16),
-                const SizedBox(
-                  height: 30,
-                ),
-                _isLoading
-                    ? Center(child: CircularProgressIndicator())
-                    : _contentServices(context, _missions)
-                // missionController.isLoading.value
-                //     ? Obx(()=>_contentServices(context, missionController.missionList))
-                //     : Center(child: CircularProgressIndicator())
-              ],
-            ),
-          ),
-        ));
+              ),
+            )));
   }
 
   Widget _contentHeader() {
@@ -101,7 +205,7 @@ class _MissionPageState extends State<MissionPage> {
         Row(
           children: <Widget>[
             Image.asset(
-              "assets/images/py_logo.png",
+              "assets/images/myclubmini.png",
               width: 30, height: 30,
               // height: MediaQuery.of(context).size.width / 2,
             ),
@@ -109,7 +213,7 @@ class _MissionPageState extends State<MissionPage> {
               width: 12,
             ),
             Text(
-              'pyMission',
+              'Mission',
               style: Theme.of(context).textTheme.headline3,
             )
           ],
@@ -168,7 +272,7 @@ Widget _contentServices(BuildContext context, List missionsList) {
   print(missionsList.toString());
   return SizedBox(
     width: double.infinity,
-    height: 400,
+    height: 430,
     child: GridView.count(
       crossAxisCount: 1,
       childAspectRatio: 4.10,

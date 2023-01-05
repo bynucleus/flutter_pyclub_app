@@ -1,4 +1,4 @@
-import 'package:pyclub/services/http_service.dart';
+import 'package:myclub/services/http_service.dart';
 import 'package:get/get.dart';
 
 class MissionController extends GetxController {

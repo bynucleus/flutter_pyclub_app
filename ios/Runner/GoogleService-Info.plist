@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.emmanuelmalan.pyclub</string>
+	<string>com.emmanuelmalan.myclub</string>
 	<key>PROJECT_ID</key>
 	<string>sminth-225</string>
 	<key>STORAGE_BUCKET</key>

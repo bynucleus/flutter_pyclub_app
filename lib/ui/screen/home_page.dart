@@ -1,14 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:pyclub/model/seance.dart';
-import 'package:pyclub/model/user.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/ui/widgets/custom_w1.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/file_path.dart';
-import 'package:pyclub/util/info.dart';
+import 'package:myclub/model/seance.dart';
+import 'package:myclub/model/user.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/ui/widgets/custom_w1.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/file_path.dart';
+import 'package:myclub/util/info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'detail_page.dart';
 
@@ -25,13 +29,120 @@ class _HomePageState extends State<HomePage> {
   List<SeanceModel> _seances;
   bool _isLoadingUserList = true;
   bool _isLoadingSeanceList = true;
-  String pcc ;
+  String pcc = "0";
   Widget buildMovieShimmer() => CustomWidget.rectangular(width: 80);
+  BannerAd myBanner;
+  bool isloaded = false;
+
+  String testDevice = 'YOUR_DEVICE_ID';
+  int maxFailedLoadAttempts = 3;
+  InterstitialAd _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+
+  RewardedAd _rewardedAd;
+  int _numRewardedLoadAttempts = 0;
+
+  RewardedInterstitialAd _rewardedInterstitialAd;
+  int _numRewardedInterstitialLoadAttempts = 0;
+
+  BannerAd _bannerAd;
+
+  void _createRewardedAd() {
+    RewardedAd.load(
+        adUnitId: 'ca-app-pub-3940256099942544/5224354917',
+        request: AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (RewardedAd ad) {
+            print('$ad loaded.');
+            _rewardedAd = ad;
+            _numRewardedLoadAttempts = 0;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('RewardedAd failed to load: $error');
+            _rewardedAd = null;
+            _numRewardedLoadAttempts += 1;
+            if (_numRewardedLoadAttempts < maxFailedLoadAttempts) {
+              _createRewardedAd();
+            }
+          },
+        ));
+  }
+
+  void _showRewardedAd() {
+    if (_rewardedAd == null) {
+      print('Warning: attempt to show rewarded before loaded.');
+      return;
+    }
+    _rewardedAd.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (RewardedAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createRewardedAd();
+      },
+      onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createRewardedAd();
+      },
+    );
+
+    _rewardedAd.setImmersiveMode(true);
+    _rewardedAd.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) async {
+      var us = await API_Manager.addPcc(Info.id, "10");
+
+      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+    });
+    _rewardedAd = null;
+    setState(() {
+      // getData();
+      pcc = "${int.parse(pcc) + 10}";
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    myBanner = BannerAd(
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        // Called when an ad is successfully received.
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            isloaded = true;
+          });
+          print('Ad loaded.');
+        },
+        // Called when an ad request failed.
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          // Dispose the ad here to free resources.
+          ad.dispose();
+          print('Ad failed to load: $error');
+        },
+        // Called when an ad opens an overlay that covers the screen.
+        onAdOpened: (Ad ad) => print('Ad opened.'),
+        // Called when an ad removes an overlay that covers the screen.
+        onAdClosed: (Ad ad) => print('Ad closed.'),
+        // Called when an impression occurs on the ad.
+        onAdImpression: (Ad ad) => print('Ad impression.'),
+      ),
+    );
+
+    myBanner.load();
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    _createRewardedAd();
+
     getData();
     setState(() {
       // print(missionController.fetchData());
@@ -54,9 +165,19 @@ class _HomePageState extends State<HomePage> {
     return "Algoros";
   }
 
+  Future<String> getPcc() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    // var pcc = jsonDecode(localStorage.get('pcc'));
+    var email = jsonDecode(localStorage.get('email'));
+
+    var usr = _users.where((us) => us.email == email).toList();
+    // print("================================================");
+    // print();
+    return usr.length != 1 ? '0' : usr[0].pcc;
+  }
+
   Future<void> getData() async {
     setState(() {
-      pcc=Info.pcc;
       _isLoadingUserList = true;
       _isLoadingSeanceList = true;
     });
@@ -64,10 +185,10 @@ class _HomePageState extends State<HomePage> {
     _seances = await API_Manager.getSeances();
 
     setState(() {
-       pcc=Info.pcc;
       _isLoadingUserList = false;
       _isLoadingSeanceList = false;
     });
+    pcc = await getPcc();
   }
 
   RefreshController _refreshController =
@@ -175,6 +296,13 @@ class _HomePageState extends State<HomePage> {
                   _isLoadingSeanceList
                       ? Center(child: CircularProgressIndicator())
                       : _contentServices(context, _seances),
+                  isloaded
+                      ? Container(
+                          height: 50,
+                          child: AdWidget(
+                            ad: myBanner,
+                          ))
+                      : SizedBox(),
                 ],
               ),
             ),
@@ -193,7 +321,7 @@ class _HomePageState extends State<HomePage> {
             //   width: 34,
             // ),
             Image.asset(
-              "assets/images/py_logo.png",
+              "assets/images/myclubmini.png",
               width: 30, height: 30,
               // height: MediaQuery.of(context).size.width / 2,
             ),
@@ -201,7 +329,7 @@ class _HomePageState extends State<HomePage> {
               width: 12,
             ),
             Text(
-              'pyClub',
+              'myClub',
               style: Theme.of(context).textTheme.headline3,
             )
           ],
@@ -241,14 +369,14 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                pcc ?? '' + ' pcc',
+                pcc == null ? "0" : pcc + ' pcc',
                 style: Theme.of(context).textTheme.headline5,
               ),
               const SizedBox(
                 height: 12,
               ),
               Text(
-                getNiveau(int.parse(Info.pcc ?? "1")),
+                getNiveau(pcc == null ? 1 : int.parse(pcc)),
                 style: Theme.of(context).textTheme.headline4.copyWith(
                       fontSize: 15,
                       fontWeight: FontWeight.w400,
@@ -256,19 +384,25 @@ class _HomePageState extends State<HomePage> {
               )
             ],
           ),
-          Container(
-            height: 55,
-            width: 55,
-            decoration: BoxDecoration(
-              color: const Color(0xffFFAC30),
-              borderRadius: BorderRadius.circular(80),
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.verified,
+          GestureDetector(
+            onTap: () {
+              //  getData();
+              _showRewardedAd();
+            },
+            child: Container(
+              height: 55,
+              width: 55,
+              decoration: BoxDecoration(
+                color: const Color(0xffFFAC30),
+                borderRadius: BorderRadius.circular(80),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.verified,
+                ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
@@ -311,6 +445,7 @@ class _HomePageState extends State<HomePage> {
               ),
               child: GestureDetector(
                   onTap: () {
+                   
                     showModalBottomSheet(
                         backgroundColor: Theme.of(context).cardColor,
                         context: context,
@@ -330,13 +465,13 @@ class _HomePageState extends State<HomePage> {
                                     fontWeight: FontWeight.w700),
                               ))),
 
-                              ListTile(
-                                trailing: Text(
-                                  item.name + " " + item.prenom,
-                                  style: Theme.of(context).textTheme.headline4,
-                                ),
-                                title: Text("Nom"),
-                              ),
+                              // ListTile(
+                              //   trailing: Text(
+                              //     item.name + " " + item.prenom,
+                              //     style: Theme.of(context).textTheme.headline4,
+                              //   ),
+                              //   title: Text("Nom"),
+                              // ),
                               // ListTile(
                               //   title: Text("pour plus de detail telecharger le pdf"),
                               // ),
@@ -356,14 +491,14 @@ class _HomePageState extends State<HomePage> {
                               ),
                               ListTile(
                                 trailing: Text(
-                                  item.pcc + " pcc",
+                                   pcc == null ? "0" : pcc + ' pcc',
                                   style: Theme.of(context).textTheme.headline4,
                                 ),
                                 title: Text("Point"),
                               ),
                               ListTile(
                                 trailing: Text(
-                                  item.niveau,
+                                  item.niveau ?? ' ',
                                   style: Theme.of(context).textTheme.headline4,
                                 ),
                                 title: Text("niveau"),
@@ -417,7 +552,7 @@ class _HomePageState extends State<HomePage> {
   Widget _contentServices(BuildContext context, List list) {
     return SizedBox(
       width: double.infinity,
-      height: 300,
+      height: 250,
       child: GridView.count(
         crossAxisCount: 1,
         childAspectRatio: 4.10,

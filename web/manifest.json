@@ -1,6 +1,6 @@
 {
-    "name": "pyclub",
-    "short_name": "pyclub",
+    "name": "myclub",
+    "short_name": "myclub",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

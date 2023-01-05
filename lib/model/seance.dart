@@ -1,10 +1,11 @@
 class SeanceModel {
   String date;
+  String club;
   int id;
 
   List<List<String>> notes;
   List<List<String>> liste_presence;
-  SeanceModel({this.date, this.id});
+  SeanceModel({this.date, this.id, this.club});
 
   // receiving data from server
 
@@ -13,6 +14,7 @@ class SeanceModel {
   }
  factory SeanceModel.fromJson(Map<String, dynamic> json) => SeanceModel(
         id: json["id"],
+        club: json["club"],
         date: json["date"],
 
       );

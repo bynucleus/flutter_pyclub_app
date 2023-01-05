@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pyclub/util/file_path.dart';
+import 'package:myclub/util/file_path.dart';
 
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -46,16 +46,18 @@ class _SignInPageState extends State<SignInPage> {
             ),
             Expanded(
               flex: 2,
-              child: SingleChildScrollView(child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    _topContent(),
-                    _centerContent(),
-                    _bottomContent()
-                  ],
-                ),),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      _topContent(),
+                      _centerContent(),
+                      _bottomContent()
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -95,10 +97,10 @@ class _SignInPageState extends State<SignInPage> {
         const SizedBox(
           height: 22,
         ),
-        Text(
-          formattedDate,
-          style: Theme.of(context).textTheme.bodyText2,
-        )
+        // Text(
+        //   formattedDate,
+        //   style: Theme.of(context).textTheme.bodyText2,
+        // )
       ],
     );
   }
@@ -110,8 +112,8 @@ class _SignInPageState extends State<SignInPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Image.asset(
-            'assets/images/py_logo.png',
-            width: 40.0,
+            'assets/images/myclubmini.png',
+            width: 60.0,
             height: 40.0,
             fit: BoxFit.cover,
           ),
@@ -119,15 +121,15 @@ class _SignInPageState extends State<SignInPage> {
           const SizedBox(
             height: 1,
           ),
-          Text(
-            'pyClub',
-            style: Theme.of(context).textTheme.headline5,
-          ),
+          // Text(
+          //   'yClub',
+          //   style: Theme.of(context).textTheme.headline5,
+          // ),
           const SizedBox(
             height: 18,
           ),
           Text(
-            'pyClub est exclusivement reservé aux membres du club python de la filière Miage de l\'université FHB.\n',
+            'myClub est exclusivement reservé aux membres des clubs de la filière Miage de l\'université FHB.\n',
             style: Theme.of(context).textTheme.bodyText1,
           )
         ],

@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 class UserM {
   int id;
   String name;
-  String prenom;
+  String club;
   String niveau;
   String email;
   String pcc;
@@ -12,7 +12,7 @@ class UserM {
   UserM(
       {@required this.id,
       @required this.name,
-      @required this.prenom,
+      @required this.club,
       @required this.niveau,
       @required this.email,
       @required this.profileImage,
@@ -21,7 +21,7 @@ class UserM {
  factory UserM.fromJson(Map<String, dynamic> json) => UserM(
         id: json["id"],
         name: json["name"],
-        prenom: json["prenom"],
+        club: json["club"],
         niveau: json["niveau"],
         email: json["email"],
         pcc: json["pcc"].toString(),

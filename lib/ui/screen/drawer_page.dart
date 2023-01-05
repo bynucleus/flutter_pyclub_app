@@ -5,22 +5,23 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:pyclub/model/user.dart';
-import 'package:pyclub/model/user_model.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/ui/screen/about_page.dart';
-import 'package:pyclub/ui/screen/home_page.dart';
-import 'package:pyclub/ui/screen/liste.dart';
-import 'package:pyclub/ui/screen/member_page.dart';
-import 'package:pyclub/ui/screen/profile.dart';
-import 'package:pyclub/ui/screen/ressource_page.dart';
-import 'package:pyclub/ui/screen/sign_in.dart';
-import 'package:pyclub/util/network_bloc.dart';
-import 'package:pyclub/util/network_event.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/file_path.dart';
-import 'package:pyclub/util/info.dart';
+import 'package:myclub/model/user.dart';
+import 'package:myclub/model/user_model.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/ui/screen/about_page.dart';
+import 'package:myclub/ui/screen/home_page.dart';
+import 'package:myclub/ui/screen/liste.dart';
+import 'package:myclub/ui/screen/member_page.dart';
+import 'package:myclub/ui/screen/profile.dart';
+import 'package:myclub/ui/screen/ressource_page.dart';
+import 'package:myclub/ui/screen/sign_in.dart';
+import 'package:myclub/util/network_bloc.dart';
+import 'package:myclub/util/network_event.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/file_path.dart';
+import 'package:myclub/util/info.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:select_dialog/select_dialog.dart';
@@ -42,6 +43,8 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   bool profile = false;
   bool progression = false;
   int _index = 0;
+  // final BannerAdListener listener =
+
   // User user;
   final parser = Parse();
   UserModel userModel;
@@ -78,10 +81,16 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   //   // print(userModel.email);
   //   setState(() {});
   // }
-
+  AdWidget adWidget;
   AnimationController rotationController;
+
+
+
   @override
   void initState() {
+   
+    // adWidget = AdWidget(ad: myBanner);
+
     rotationController = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
     super.initState();
@@ -102,7 +111,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
 
     _user = await API_Manager.getUserByMail(email.toString());
     Info.nom = _user?.name;
-    Info.prenom = _user?.prenom;
+    Info.club = _user?.club;
     Info.email = _user?.email;
     Info.profileImage = _user?.profileImage;
     Info.pcc = _user?.pcc;
@@ -279,7 +288,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                         children: [
                                           Flexible(
                                             child: Text(
-                                              _user?.name ?? "pyclub",
+                                              _user?.name ?? "myclub",
                                               // userModel.email,
                                               // "f",
                                               style: Theme.of(context)
@@ -404,6 +413,9 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
+
+                   
+
                     Container(
                       padding: const EdgeInsets.all(20),
                       child: Row(

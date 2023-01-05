@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pyclub/model/ressource.dart';
-import 'package:pyclub/model/user.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/file_path.dart';
+import 'package:myclub/model/ressource.dart';
+import 'package:myclub/model/user.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/file_path.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -123,7 +123,7 @@ class _MemberPageState extends State<MemberPage> {
         Row(
           children: <Widget>[
             Image.asset(
-              "assets/images/py_logo.png",
+              "assets/images/myclubmini.png",
               width: 30, height: 30,
               // height: MediaQuery.of(context).size.width / 2,
             ),
@@ -173,7 +173,7 @@ Widget _contentServices(BuildContext context, List missionsList) {
                   final contenu = TextEditingController();
                   return AlertDialog(
                     content: Stack(
-                      overflow: Overflow.visible,
+                      // overflow: Overflow.visible,
                       children: <Widget>[
                         Positioned(
                           right: -40.0,
@@ -203,7 +203,7 @@ Widget _contentServices(BuildContext context, List missionsList) {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: RaisedButton(
+                                child: ElevatedButton(
                                   child: Text("Valider"),
                                   onPressed: () {
                                     API_Manager.addPcc(value.id, contenu.text);

@@ -1,16 +1,17 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 // import 'package:firebase_core/firebase_core.dart';
-import 'package:pyclub/ui/screen/drawer_page.dart';
-import 'package:pyclub/ui/screen/sign_in.dart';
+import 'package:myclub/ui/screen/drawer_page.dart';
+import 'package:myclub/ui/screen/sign_in.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'util/constant.dart';
 import 'util/theme.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+MobileAds.instance.initialize();
   // await Firebase.initializeApp();
 
   // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -53,7 +54,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
- void _checkIfLoggedIn() async {
+  void _checkIfLoggedIn() async {
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var token = localStorage.getString('token');
     if (token != null) {
@@ -62,7 +63,7 @@ class _MyAppState extends State<MyApp> {
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -70,19 +71,19 @@ class _MyAppState extends State<MyApp> {
         '/loginPage': (BuildContext context) => new SignInPage(),
         '/home': (BuildContext context) => new DrawerPage(),
       },
-      title: 'pyClub',
+      title: 'myClub',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       // theme: darkTheme,
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
       home: SplashScreenView(
-        navigateRoute: isAuth
-            ? DrawerPage()
-            : SignInPage(),
+        navigateRoute: isAuth ? DrawerPage() : SignInPage(),
         duration: 3000,
-        imageSize: 230,
-        imageSrc: "assets/images/pyclub.png",
+        // imageSize: 230,
+        imageSize: 60,
+        imageSrc: "assets/images/myclub.png",
+        // imageSrc: "assets/images/pyclub.png",
         text: "l'art de coder !",
         textType: TextType.TyperAnimatedText,
         textStyle: TextStyle(

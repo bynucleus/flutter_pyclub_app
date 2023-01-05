@@ -10,6 +10,7 @@ class Mission {
   String fin;
   String lien;
   String pcc;
+  String club;
 
 
   Mission({
@@ -19,7 +20,8 @@ class Mission {
     @required this.description,
     @required this.fin,
     @required this.lien, 
-    @required this.pcc
+    @required this.pcc,
+    @required this.club
   });
 
   factory Mission.fromJson(Map<String, dynamic> json) => Mission(
@@ -30,6 +32,7 @@ class Mission {
         debut: json["debut"],
         fin: json["fin"],
         pcc: json["pcc"],
+        club: json["club"],
 
       );
 
@@ -41,6 +44,7 @@ class Mission {
         "debut": debut,
         "fin": fin,
         "pcc": pcc,
+        "club": club,
       };
 
 static List<Mission> missionsFromSnapshot(List snapshot) {

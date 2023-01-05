@@ -43,6 +43,7 @@ class MissionModel {
   String fin;
   String lien;
   String pcc;
+  String club;
 
 
   MissionModel({
@@ -52,7 +53,8 @@ class MissionModel {
     @required this.description,
     @required this.fin,
     @required this.lien, 
-    @required this.pcc
+    @required this.pcc,
+    @required this.club,
   });
 
   factory MissionModel.fromJson(Map<String, dynamic> json) => MissionModel(
@@ -63,6 +65,7 @@ class MissionModel {
         debut: json["debut"],
         fin: json["fin"],
         pcc: json["pcc"],
+        club: json["club"],
 
       );
 
@@ -74,6 +77,7 @@ class MissionModel {
         "debut": debut,
         "fin": fin,
         "pcc": pcc,
+        "club": club,
       };
   // static MissionModel fromMap(Map<String, dynamic> map) {
   //   return MissionModel(

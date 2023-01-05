@@ -1,4 +1,4 @@
-package com.emmanuelmalan.pyclub
+package com.emmanuelmalan.myclub
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

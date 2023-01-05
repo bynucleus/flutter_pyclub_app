@@ -3,7 +3,7 @@ import 'dart:convert';
 
 
 class Note {
-  int id;
+  String id;
   String seanceid;
   String titre;
   String nom;
@@ -23,13 +23,12 @@ class Note {
   });
 
   factory Note.fromJson(Map<String, dynamic> json) => Note(
-        id: json["id"],
-        seanceid: json["seance_id"],
+        id: json["id"].toString() ,
+        seanceid: json["seance_id"].toString() ,
         titre: json["titre"],
         nom: json["nom"],
         contenu: json["contenu"],
-        date: json["created_at"].substring(0, 20),
- 
+        date: json["created_at"].substring(0, 20) ,
 
       );
 

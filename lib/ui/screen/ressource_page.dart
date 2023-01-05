@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 // import 'package:frefresh/frefresh.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:pyclub/model/ressource.dart';
-import 'package:pyclub/services/http_service.dart';
-import 'package:pyclub/util/constant.dart';
-import 'package:pyclub/util/file_path.dart';
+import 'package:myclub/model/ressource.dart';
+import 'package:myclub/services/http_service.dart';
+import 'package:myclub/util/constant.dart';
+import 'package:myclub/util/file_path.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,6 +21,43 @@ class RessourcePage extends StatefulWidget {
 class _RessourcePageState extends State<RessourcePage> {
   List<RessourceModel> _ressource;
   bool _isLoading = true;
+
+  BannerAd myBanner;
+  bool isloaded = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    myBanner = BannerAd(
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        // Called when an ad is successfully received.
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            isloaded = true;
+          });
+          print('Ad loaded.');
+        },
+        // Called when an ad request failed.
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          // Dispose the ad here to free resources.
+          ad.dispose();
+          print('Ad failed to load: $error');
+        },
+        // Called when an ad opens an overlay that covers the screen.
+        onAdOpened: (Ad ad) => print('Ad opened.'),
+        // Called when an ad removes an overlay that covers the screen.
+        onAdClosed: (Ad ad) => print('Ad closed.'),
+        // Called when an impression occurs on the ad.
+        onAdImpression: (Ad ad) => print('Ad impression.'),
+      ),
+    );
+
+    myBanner.load();
+  }
 
   @override
   void initState() {
@@ -119,7 +157,7 @@ class _RessourcePageState extends State<RessourcePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
-                      'Ressouces partagées ...',
+                      'Ressources partagées ...',
                       style: Theme.of(context).textTheme.headline4,
                     ),
                     // SvgPicture.asset(
@@ -136,6 +174,13 @@ class _RessourcePageState extends State<RessourcePage> {
                 _isLoading
                     ? Center(child: CircularProgressIndicator())
                     : _contentServices(context, _ressource),
+                isloaded
+                    ? Container(
+                        height: 50,
+                        child: AdWidget(
+                          ad: myBanner,
+                        ))
+                    : SizedBox(),
               ],
             ),
           ),
@@ -151,7 +196,7 @@ class _RessourcePageState extends State<RessourcePage> {
         Row(
           children: <Widget>[
             Image.asset(
-              "assets/images/py_logo.png",
+              "assets/images/myclubmini.png",
               width: 30, height: 30,
               // height: MediaQuery.of(context).size.width / 2,
             ),
@@ -159,7 +204,7 @@ class _RessourcePageState extends State<RessourcePage> {
               width: 12,
             ),
             Text(
-              'pyRessource',
+              'Ressource',
               style: Theme.of(context).textTheme.headline3,
             )
           ],
@@ -190,7 +235,7 @@ Widget _contentServices(BuildContext context, List missionsList) {
   print(missionsList.toString());
   return SizedBox(
     width: double.infinity,
-    height: 500,
+    height: 520,
     child: GridView.count(
       crossAxisCount: 1,
       childAspectRatio: 4.10,

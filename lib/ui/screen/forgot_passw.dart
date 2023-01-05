@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pyclub/ui/widgets/button_widget.dart';
+import 'package:myclub/ui/widgets/button_widget.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
