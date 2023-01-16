@@ -31,7 +31,8 @@ class _MissionPageState extends State<MissionPage> {
     super.didChangeDependencies();
 
     myBanner = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      adUnitId: 'ca-app-pub-5121228300622251/7582962653',
+      // adUnitId: 'ca-app-pub-3940256099942544/6300978111',
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(
@@ -213,7 +214,7 @@ class _MissionPageState extends State<MissionPage> {
               width: 12,
             ),
             Text(
-              'Mission',
+              'Missions',
               style: Theme.of(context).textTheme.headline3,
             )
           ],

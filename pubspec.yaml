@@ -1,7 +1,7 @@
 name: myclub
 
 description: Appli conçu pour les membres des clubs de la filère Miage de l'UFHB.
-version: 1.0.1+2
+version: 1.0.2+1
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -50,7 +50,7 @@ dev_dependencies:
     sdk: flutter
 
 flutter_icons:
-  image_path: "assets/images/myclub.png" 
+  image_path: "assets/images/myclubmini.png" 
   android: true
   ios: true
   # optionally, as transparency is not allowed on app store

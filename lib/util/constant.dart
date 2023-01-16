@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const URL_BASE = "http://192.168.1.66:8000/";
-// const URL_BASE = "https://myclub.eblackci.com/public/";
+// const URL_BASE = "http://192.168.1.66:8000/";
+const URL_BASE = "http://nucleus.studio/";
 const API_URL_BASE = URL_BASE + "api/";
 
 const COLOR_PRIMARY = Colors.deepOrangeAccent;

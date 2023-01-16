@@ -31,9 +31,8 @@ class _AboutPageState extends State<AboutPage> {
                 //   height: 50,
                 // ),
                 Image.asset(
-                  
                   "assets/images/myclub.png",
-               
+
                   // "assets/images/pyclub.png",
                   height: MediaQuery.of(context).size.width / 2,
                 ),
@@ -49,12 +48,12 @@ class _AboutPageState extends State<AboutPage> {
                   title: Text("auteur"),
                   trailing: GestureDetector(
                       onTap: () async {
-                        if (await canLaunch("https://nucleus.eblackci.com")) {
-                          await launch("https://nucleus.eblackci.com");
+                        if (await canLaunch("http://nucleus.studio")) {
+                          await launch("http://nucleus.studio");
                         } else {
                           Fluttertoast.showToast(
                               msg: "impossible d'ouvrir le lien : " +
-                                  "https://nucleus.eblackci.com");
+                                  "http://nucleus.studio");
                           // throw 'Could not launch link';
                         }
                       },

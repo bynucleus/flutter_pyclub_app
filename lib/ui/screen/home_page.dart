@@ -49,7 +49,8 @@ class _HomePageState extends State<HomePage> {
 
   void _createRewardedAd() {
     RewardedAd.load(
-        adUnitId: 'ca-app-pub-3940256099942544/5224354917',
+        adUnitId: 'ca-app-pub-5121228300622251/1964175591',
+        // adUnitId: 'ca-app-pub-3940256099942544/5224354917',
         request: AdRequest(),
         rewardedAdLoadCallback: RewardedAdLoadCallback(
           onAdLoaded: (RewardedAd ad) {
@@ -107,7 +108,8 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
 
     myBanner = BannerAd(
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      adUnitId: 'ca-app-pub-5121228300622251/7582962653',
+      // adUnitId: 'ca-app-pub-3940256099942544/6300978111',
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(

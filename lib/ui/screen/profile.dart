@@ -15,6 +15,7 @@ import 'package:myclub/util/file_path.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:myclub/util/info.dart';
+import 'package:select_dialog/select_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -28,7 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
   String result = "a";
   UserM user;
   UserM _user;
-
+  String _verifAdmin = "sminth@sminth.com";
+  bool _isLoadingUser = true;
+  var profileImage = null;
   int value = 1;
   bool retrait = false;
   TapGestureRecognizer _flutterTapRecognizer;
@@ -48,6 +51,7 @@ class _ProfilePageState extends State<ProfilePage> {
         pcc: Info.pcc,
         id: Info.id,
         niveau: Info.niveau);
+     getUserDetails();
     super.initState();
     _flutterTapRecognizer = new TapGestureRecognizer();
   }
@@ -83,9 +87,9 @@ class _ProfilePageState extends State<ProfilePage> {
     Info.niveau = _user?.niveau;
 
     setState(() {
-      // profileImage = "assets/svg/" + _user?.profileImage;
-      // _isLoadingUser = false;
-      // _verifAdmin = _user?.email;
+      profileImage = "assets/svg/" + _user?.profileImage;
+      _isLoadingUser = false;
+      _verifAdmin = _user?.email;
     });
   }
 
@@ -216,10 +220,85 @@ class _ProfilePageState extends State<ProfilePage> {
                     )),
                 Positioned(
                     bottom: -50.0,
-                    child: CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.white,
-                        child: SvgPicture.asset("assets/svg/avator1.svg"))),
+                    child: GestureDetector(
+                        onTap: () {
+//                                Navigator.push(
+//                                     context,
+//                                     MaterialPageRoute(
+//                                         builder: (_) => ProfilePage()));
+
+                          SelectDialog.showModal<String>(
+                            context,
+                            label: "Selectionner un nouvel avatar",
+                            // selectedValue: ex1,
+                            showSearchBox: false,
+                            alwaysShowScrollBar: false,
+                            items: List.generate(17, (index) => "${index + 1}"),
+                            itemBuilder: (BuildContext context, String h,
+                                bool isSelected) {
+                              return Container(
+                                decoration: !isSelected
+                                    ? null
+                                    : BoxDecoration(
+                                        borderRadius: BorderRadius.circular(5),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color:
+                                                Theme.of(context).primaryColor),
+                                      ),
+                                child: ListTile(
+                                  leading: Container(
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: const Color(0xffD8D9E4))),
+                                    child: CircleAvatar(
+                                      radius: 22.0,
+                                      backgroundColor:
+                                          Theme.of(context).backgroundColor,
+                                      child: ClipRRect(
+                                        child: SvgPicture.asset(
+                                            "assets/svg/avator$h.svg"),
+                                        borderRadius:
+                                            BorderRadius.circular(50.0),
+                                      ),
+                                    ),
+                                  ),
+                                  selected: isSelected,
+                                  title: Text(avatarName(h)),
+                                  // subtitle: Text(item.createdAt.toString()),
+                                ),
+                              );
+                            },
+                            onChange: (String selected) {
+                              setState(() {
+                                changeAvatar(selected);
+                              });
+                            },
+                          );
+                        },
+                        child: CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.white,
+                            child:
+                                CircleAvatar(
+                                      radius: 22.0,
+                                      backgroundColor:
+                                          Theme.of(context).backgroundColor,
+                                      child: ClipRRect(
+                                        // SvgPicture
+                                        // child: SvgPicture.asset(avatorThree),
+                                        child: SvgPicture.asset(
+                                            profileImage != null
+                                                ? profileImage
+                                                : "assets/svg/avator1.svg"),
+
+                                        borderRadius:
+                                            BorderRadius.circular(50.0),
+                                      ),
+                                    ),
+                                ))),
                 Positioned(
                     top: MediaQuery.of(context).size.height * 0.47,
                     left: 20.0,
@@ -270,26 +349,26 @@ class _ProfilePageState extends State<ProfilePage> {
                             ]),
                           ),
                           Container(
-                              child: Column(
-                            children: [
-                              Text(
-                                'progression',
-                                style: TextStyle(
-                                    color: Colors.grey[400], fontSize: 14.0),
-                              ),
-                              SizedBox(
-                                height: 5.0,
-                              ),
-                              Text(
-                                getNiveau(user?.pcc != null
-                                    ? int.parse(user?.pcc)
-                                    : 1000),
-                                style: TextStyle(
-                                  fontSize: 15.0,
+                            child: Column(
+                              children: [
+                                Text(
+                                  'progression',
+                                  style: TextStyle(
+                                      color: Colors.grey[400], fontSize: 14.0),
                                 ),
-                              )
-                            ],
-                          ),
+                                SizedBox(
+                                  height: 5.0,
+                                ),
+                                Text(
+                                  getNiveau(user?.pcc != null
+                                      ? int.parse(user?.pcc)
+                                      : 1000),
+                                  style: TextStyle(
+                                    fontSize: 15.0,
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                           Container(
                               child: Column(
@@ -303,7 +382,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 height: 5.0,
                               ),
                               Text(
-                                 user?.club ?? "miage",
+                                user?.club ?? "miage",
                                 style: TextStyle(
                                   fontSize: 15.0,
                                 ),
@@ -413,8 +492,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Divider(
             color: Colors.black,
           ),
-          
-         
+
           SizedBox(
             height: 20,
           ),
@@ -501,5 +579,46 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       )),
     );
+  }
+
+  Future<void> changeAvatar(String selected) async {
+    print("la");
+   
+    print(_user);
+    API_Manager.setAvatar(_user.id, "avator$selected.svg");
+    await getUserDetails();
+    Fluttertoast.showToast(msg: "nouvel avatar");
+  }
+}
+
+String avatarName(String h) {
+  switch (h) {
+    case "10":
+      return "junior avatar";
+      break;
+    case "2":
+      return "bryan avatar";
+      break;
+    case "8":
+      return "amenan avatar";
+      break;
+    case "4":
+      return "lolipop avatar";
+      break;
+    case "5":
+      return "domi avatar";
+      break;
+    case "15":
+      return "bedel avatar";
+      break;
+    case "1":
+      return "gumball avatar";
+      break;
+    case "17":
+      return "last avatar";
+      break;
+    default:
+      return "avatar $h";
+      break;
   }
 }
