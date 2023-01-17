@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
     _rewardedAd = null;
     setState(() {
       // getData();
-      pcc = "${int.parse(pcc) + 10}";
+      pcc = "${int.parse(pcc) + 50}";
     });
   }
 

@@ -1,7 +1,7 @@
 name: myclub
 
 description: Appli conçu pour les membres des clubs de la filère Miage de l'UFHB.
-version: 1.0.2+1
+version: 1.1.2+3
 
 environment:
   sdk: ">=2.2.2 <3.0.0"

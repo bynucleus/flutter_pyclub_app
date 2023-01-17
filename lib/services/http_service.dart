@@ -179,11 +179,38 @@ class API_Manager {
       print(Exception);
 
       return users.where((user) => user.club == club).toList();
-      ;
     }
 
     return users.where((user) => user.club == club).toList();
-    ;
+  }
+
+ static Future<List<UserM>> getAllUsers() async {
+    var client = http.Client();
+    var users = [];
+
+    var club = await _club();
+    try {
+      // print(club);
+      var response = await client.get(Uri.parse(API_URL_BASE + "users"));
+      // if (response.statusCode == 200) {
+      var jsonString = response.body;
+      var data = json.decode(jsonString);
+
+      // print(data.toString());
+      users = UserM.usersFromSnapshot(data);
+      // print(users);
+
+      // for(var i in data)
+      //   newsModel = NewsModel.fromJson(jsonMap);
+      // }
+    } catch (Exception) {
+      print(Exception);
+    return users;
+
+      // return users.where((user) => user.club == club).toList();
+    }
+
+    return users;
   }
 
   static Future<UserM> getUserByMail(String mail) async {

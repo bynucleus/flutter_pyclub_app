@@ -30,7 +30,7 @@ class _MemberPageState extends State<MemberPage> {
   }
 
   Future<void> getData() async {
-    _users = await API_Manager.getUsers();
+    _users = await API_Manager.getAllUsers();
 
     setState(() {
       _isLoadingUserList = false;

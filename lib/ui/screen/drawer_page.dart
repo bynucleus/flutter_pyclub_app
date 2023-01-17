@@ -43,7 +43,64 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   bool profile = false;
   bool progression = false;
   int _index = 0;
+
+  int maxFailedLoadAttempts = 3;
+  RewardedInterstitialAd _rewardedInterstitialAd;
+  int _numRewardedInterstitialLoadAttempts = 0;
+
   // final BannerAdListener listener =
+  void createRewardedInterstitialAd() {
+    RewardedInterstitialAd.load(
+      
+        adUnitId: 'ca-app-pub-5121228300622251/4225135131',
+        // adUnitId: 'ca-app-pub-3940256099942544/5354046379',
+        request: AdRequest(),
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (RewardedInterstitialAd ad) {
+            print('$ad loaded.');
+            _rewardedInterstitialAd = ad;
+            _numRewardedInterstitialLoadAttempts = 0;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('RewardedInterstitialAd failed to load: $error');
+            _rewardedInterstitialAd = null;
+            _numRewardedInterstitialLoadAttempts += 1;
+            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              createRewardedInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void showRewardedInterstitialAd() {
+    if (_rewardedInterstitialAd == null) {
+      print('Warning: attempt to show rewarded interstitial before loaded.');
+      return;
+    }
+    _rewardedInterstitialAd.fullScreenContentCallback =
+        FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        createRewardedInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent:
+          (RewardedInterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        createRewardedInterstitialAd();
+      },
+    );
+
+    _rewardedInterstitialAd.setImmersiveMode(true);
+    _rewardedInterstitialAd.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+      print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
+    });
+    _rewardedInterstitialAd = null;
+  }
 
   // User user;
   final parser = Parse();
@@ -84,19 +141,18 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
   AdWidget adWidget;
   AnimationController rotationController;
 
-
-
   @override
   void initState() {
-   
     // adWidget = AdWidget(ad: myBanner);
 
     rotationController = AnimationController(
         duration: const Duration(milliseconds: 300), vsync: this);
-    super.initState();
+    
 
     // user = FirebaseAuth.instance.currentUser;
     getUserDetails();
+    createRewardedInterstitialAd();
+    super.initState();
     // if (user != null) {
     //   userRef =
     //       FirebaseDatabase.instance.reference().child('users').child(user.uid);
@@ -332,7 +388,9 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                           GestureDetector(
                             child: navigatorTitle("Missions", mission),
                             onTap: () {
+
                               setState(() {
+                              showRewardedInterstitialAd();
                                 _index = 1;
                                 home = false;
                                 profile = false;
@@ -346,6 +404,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                           GestureDetector(
                             child: navigatorTitle("Ressources", ressource),
                             onTap: () {
+                              showRewardedInterstitialAd();
                               setState(() {
                                 _index = 2;
                                 profile = false;
@@ -357,7 +416,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                               });
                             },
                           ),
-                          _verifAdmin == "anelda@gmail.com"
+                          _verifAdmin == "nucleus@nucleus.studio"
                               ? GestureDetector(
                                   child:
                                       navigatorTitle("Parametre", progression),
@@ -413,9 +472,6 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
-
-                   
-
                     Container(
                       padding: const EdgeInsets.all(20),
                       child: Row(
@@ -489,7 +545,7 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                                     style:
                                         Theme.of(context).textTheme.bodyText1,
                                   )),
-                              _verifAdmin == "anelda@gmail.com"
+                              _verifAdmin == "nucleus@nucleus.studio"
                                   ? IconButton(
                                       icon: Icon(Icons.list_sharp),
                                       onPressed: () {
