@@ -98,14 +98,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   getNiveau(int pcc) {
     if (pcc != null) {
-      if (pcc < 10000)
+      if (pcc < 5000)
         return "Algoros";
-      else if (pcc < 20000)
+      else if (pcc < 12000)
         return "Pascalin";
-      else if (pcc < 40000)
+      else if (pcc < 30000)
+        return "Bêta";
+      else if (pcc >= 30000)
         return "Codeur";
-      else if (pcc >= 40000)
-        return "Pythoniste";
       else
         return "Algoros";
     }

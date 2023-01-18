@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
     _rewardedAd.setImmersiveMode(true);
     _rewardedAd.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) async {
-      var us = await API_Manager.addPcc(Info.id, "10");
+      var us = await API_Manager.addPcc(Info.id, "50");
 
       print('$ad with reward $RewardItem(${reward.amount}, ${reward.type})');
     });
@@ -153,14 +153,14 @@ class _HomePageState extends State<HomePage> {
 
   getNiveau(int pcc) {
     if (pcc != null) {
-      if (pcc < 10000)
+      if (pcc < 5000)
         return "Algoros";
-      else if (pcc < 20000)
+      else if (pcc < 12000)
         return "Pascalin";
-      else if (pcc < 40000)
+      else if (pcc < 30000)
+        return "Bêta";
+      else if (pcc >= 30000)
         return "Codeur";
-      else if (pcc >= 40000)
-        return "Pythoniste";
       else
         return "Algoros";
     }
@@ -174,7 +174,7 @@ class _HomePageState extends State<HomePage> {
 
     var usr = _users.where((us) => us.email == email).toList();
     // print("================================================");
-    // print();
+    // print(_users);
     return usr.length != 1 ? '0' : usr[0].pcc;
   }
 
@@ -191,6 +191,8 @@ class _HomePageState extends State<HomePage> {
       _isLoadingSeanceList = false;
     });
     pcc = await getPcc();
+    // print("=222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    // print(pcc);
   }
 
   RefreshController _refreshController =
@@ -447,7 +449,6 @@ class _HomePageState extends State<HomePage> {
               ),
               child: GestureDetector(
                   onTap: () {
-                   
                     showModalBottomSheet(
                         backgroundColor: Theme.of(context).cardColor,
                         context: context,
@@ -493,17 +494,18 @@ class _HomePageState extends State<HomePage> {
                               ),
                               ListTile(
                                 trailing: Text(
-                                   pcc == null ? "0" : pcc + ' pcc',
+                                  item.pcc == null ? "0" : item.pcc + ' pcc',
                                   style: Theme.of(context).textTheme.headline4,
                                 ),
                                 title: Text("Point"),
                               ),
                               ListTile(
                                 trailing: Text(
-                                  item.niveau ?? ' ',
+                                  getNiveau(
+                                      item.pcc == null ? 50 : int.parse(item.pcc)),
                                   style: Theme.of(context).textTheme.headline4,
                                 ),
-                                title: Text("niveau"),
+                                title: Text("Progression"),
                               ),
                             ],
                           );
@@ -522,7 +524,8 @@ class _HomePageState extends State<HomePage> {
                           backgroundColor: Theme.of(context).backgroundColor,
                           child: ClipRRect(
                             child: SvgPicture.asset(
-                                getProfile(item?.profileImage)),
+                                // getProfile(item?.profileImage)
+                                "assets/svg/" + item?.profileImage),
                             borderRadius: BorderRadius.circular(50.0),
                           ),
                         ),

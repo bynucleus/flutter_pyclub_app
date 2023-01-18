@@ -42,39 +42,37 @@ class _AuthPageState extends State<AuthPage> {
   final _codeacceskey = GlobalKey<FormState>();
   // final _auth = FirebaseAuth.instance;
 
-final List<Map<String, dynamic>> _items = [
-  {
-    'value': 'python',
-    'label': 'Club Python',
-    'icon': Icon(Icons.stop),
-  },
-  {
-    'value': 'java',
-    'label': 'Club Java',
-    'icon': Icon(Icons.stop),
+  final List<Map<String, dynamic>> _items = [
+    {
+      'value': 'python',
+      'label': 'Club Python',
+      'icon': Icon(Icons.stop),
+    },
+    {
+      'value': 'java',
+      'label': 'Club Java',
+      'icon': Icon(Icons.stop),
 
-    // 'icon': Icon(Icons.fiber_manual_record),
-    // 'textStyle': TextStyle(color: Colors.red),
-  },
-  {
-    'value': 'web',
-    'label': 'Club Web',
-    'icon': Icon(Icons.stop),
+      // 'icon': Icon(Icons.fiber_manual_record),
+      // 'textStyle': TextStyle(color: Colors.red),
+    },
+    {
+      'value': 'web',
+      'label': 'Club Web',
+      'icon': Icon(Icons.stop),
 
-    // 'enable': false,
-    // 'icon': Icon(Icons.grade),
-  },
+      // 'enable': false,
+      // 'icon': Icon(Icons.grade),
+    },
+    {
+      'value': 'arduino',
+      'label': 'Club IOT & Arduino',
+      'icon': Icon(Icons.stop),
 
-   {
-    'value': 'arduino',
-    'label': 'Club IOT & Arduino',
-    'icon': Icon(Icons.stop),
-
-    // 'enable': false,
-    // 'icon': Icon(Icons.grade),
-  },
-  
-];
+      // 'enable': false,
+      // 'icon': Icon(Icons.grade),
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -547,17 +545,9 @@ final List<Map<String, dynamic>> _items = [
   }
 
   bool pwVisible = false;
-  Widget buildTextField(
-    String hintText,
-    IconData icon,
-    bool password,
-    size,
-    FormFieldValidator validator,
-    Key key,
-    int stringToEdit,
-    bool isDarkMode,
-    [bool isselect=false]
-  ) {
+  Widget buildTextField(String hintText, IconData icon, bool password, size,
+      FormFieldValidator validator, Key key, int stringToEdit, bool isDarkMode,
+      [bool isselect = false]) {
     return Padding(
       padding: EdgeInsets.only(top: size.height * 0.025),
       child: Container(
@@ -569,75 +559,74 @@ final List<Map<String, dynamic>> _items = [
         ),
         child: Form(
           key: key,
-          child: 
-          isselect?
-          SelectFormField(
-  type: SelectFormFieldType.dialog, // or can be dialog
-  initialValue: 'python',
-  icon: Icon(Icons.format_shapes),
-   
-  // labelText: 'Club',
-  items: _items,
-  onChanged: (val) => textfieldsStrings[stringToEdit] = val,
-  onSaved: (val) => print(val),
-):
-          TextFormField(
-            style: TextStyle(
-                color: isDarkMode ? const Color(0xffADA4A5) : Colors.black),
-            onChanged: (value) {
-              setState(() {
-                textfieldsStrings[stringToEdit] = value;
-                // print(textfieldsStrings[stringToEdit]);
-              });
-            },
-            validator: validator,
-            textInputAction: TextInputAction.next,
-            obscureText: password ? !pwVisible : false,
-            decoration: InputDecoration(
-              errorStyle: const TextStyle(height: 0),
-              hintStyle: const TextStyle(
-                color: Color(0xffADA4A5),
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(
-                top: size.height * 0.012,
-              ),
-              hintText: hintText,
-              prefixIcon: Padding(
-                padding: EdgeInsets.only(
-                  top: size.height * 0.005,
-                ),
-                child: Icon(
-                  icon,
-                  color: const Color(0xff7B6F72),
-                ),
-              ),
-              suffixIcon: password
-                  ? Padding(
+          child: isselect
+              ? SelectFormField(
+                  // type: SelectFormFieldType.dialog, // or can be dialog
+                  initialValue: 'python',
+                  icon: Icon(Icons.format_shapes),
+
+                  // labelText: 'Club',
+                  items: _items,
+                  onChanged: (val) => textfieldsStrings[stringToEdit] = val,
+                  onSaved: (val) => print(val),
+                )
+              : TextFormField(
+                  style: TextStyle(
+                      color:
+                          isDarkMode ? const Color(0xffADA4A5) : Colors.black),
+                  onChanged: (value) {
+                    setState(() {
+                      textfieldsStrings[stringToEdit] = value;
+                      // print(textfieldsStrings[stringToEdit]);
+                    });
+                  },
+                  validator: validator,
+                  textInputAction: TextInputAction.next,
+                  obscureText: password ? !pwVisible : false,
+                  decoration: InputDecoration(
+                    errorStyle: const TextStyle(height: 0),
+                    hintStyle: const TextStyle(
+                      color: Color(0xffADA4A5),
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.only(
+                      top: size.height * 0.012,
+                    ),
+                    hintText: hintText,
+                    prefixIcon: Padding(
                       padding: EdgeInsets.only(
                         top: size.height * 0.005,
                       ),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            pwVisible = !pwVisible;
-                          });
-                        },
-                        child: pwVisible
-                            ? const Icon(
-                                Icons.visibility_off_outlined,
-                                color: Color(0xff7B6F72),
-                              )
-                            : const Icon(
-                                Icons.visibility_outlined,
-                                color: Color(0xff7B6F72),
-                              ),
+                      child: Icon(
+                        icon,
+                        color: const Color(0xff7B6F72),
                       ),
-                    )
-                  : null,
-            ),
-          ),
-      
+                    ),
+                    suffixIcon: password
+                        ? Padding(
+                            padding: EdgeInsets.only(
+                              top: size.height * 0.005,
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  pwVisible = !pwVisible;
+                                });
+                              },
+                              child: pwVisible
+                                  ? const Icon(
+                                      Icons.visibility_off_outlined,
+                                      color: Color(0xff7B6F72),
+                                    )
+                                  : const Icon(
+                                      Icons.visibility_outlined,
+                                      color: Color(0xff7B6F72),
+                                    ),
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
         ),
       ),
     );
@@ -791,8 +780,10 @@ final List<Map<String, dynamic>> _items = [
                   localStorage.setString('user', json.encode(body['user']));
                   localStorage.setString(
                       'email', json.encode(body['user']['email']));
-                  localStorage.setString('club', json.encode(body['user']['club']));
-        localStorage.setString('pcc', json.encode(body['user']['pcc']));
+                  localStorage.setString(
+                      'club', json.encode(body['user']['club']));
+                  localStorage.setString(
+                      'pcc', json.encode(body['user']['pcc']));
 
                   progressDialog.dismiss();
 

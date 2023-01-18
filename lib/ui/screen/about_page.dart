@@ -32,7 +32,6 @@ class _AboutPageState extends State<AboutPage> {
                 // ),
                 Image.asset(
                   "assets/images/myclub.png",
-
                   // "assets/images/pyclub.png",
                   height: MediaQuery.of(context).size.width / 2,
                 ),
@@ -41,7 +40,7 @@ class _AboutPageState extends State<AboutPage> {
                 ListTile(
                   leading: Icon(Icons.verified),
                   title: Text("version"),
-                  trailing: Text("2.0.1 "),
+                  trailing: Text("1.1.2 "),
                 ),
                 ListTile(
                   leading: Icon(Icons.supervised_user_circle),
@@ -63,7 +62,7 @@ class _AboutPageState extends State<AboutPage> {
                       )),
                 ),
                 SizedBox(
-                  height: 100,
+                  height: 300,
                 ),
                 Center(
                     child: Text(

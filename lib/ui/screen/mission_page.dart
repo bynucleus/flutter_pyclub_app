@@ -314,7 +314,7 @@ Widget _contentServices(BuildContext context, List missionsList) {
                       Center(
                         child: GestureDetector(
                           onTap: () {
-                            _launchURL(value.lien);
+                            _launchURL(URL_BASE+value.lien);
                           },
                           child: Container(
                             padding: EdgeInsets.only(left: 5, right: 5),
