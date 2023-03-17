@@ -92,11 +92,17 @@ class _IntroPageState extends State<IntroPage> {
         const SizedBox(
           height: 18,
         ),
-       Text(
+        Center(child:  Image.asset(
+            'assets/images/ji.png',
+            width: 100.0,
+            height: 60.0,
+            fit: BoxFit.cover,
+          ),),
+       Center(child: Text(
               'JI MIAGE 2023',
               textAlign : TextAlign.end,
               style: Theme.of(context).textTheme.subtitle1,
-            ),
+            ),),
         const SizedBox(
           height: 22,
         ),
@@ -114,12 +120,7 @@ class _IntroPageState extends State<IntroPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          // Image.asset(
-          //   'assets/images/background.png',
-          //   width: 60.0,
-          //   height: 40.0,
-          //   fit: BoxFit.cover,
-          // ),
+         
           // SvgPicture.asset(logo),
           const SizedBox(
             height: 1,
@@ -132,7 +133,7 @@ class _IntroPageState extends State<IntroPage> {
             height: 1,
           ),
           Text(
-            "Journée d'intégration 2023 CAISTAB PLATEAU,",
+            "Journée d'intégration MIAGE 2023 CAISTAB PLATEAU,",
               textAlign : TextAlign.end,
 
             style: Theme.of(context).textTheme.bodyText2,
