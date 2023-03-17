@@ -1,10 +1,14 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:myclub/ji/main.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:myclub/ui/screen/drawer_page.dart';
+import 'package:myclub/ui/screen/intro.dart';
 import 'package:myclub/ui/screen/sign_in.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'ji/globals.dart';
+import 'ji/styles.dart';
 import 'util/constant.dart';
 import 'util/theme.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -33,11 +37,29 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool isAuth = false;
+    bool _loading = true;
+  Widget _toShow = Container(color: Colors.white, child: Center(child: loader()));
 
+  _loadPref() async {
+    loadData();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Widget home = const IntroPage();
+    bool notfistTime = (prefs.getBool('notFistTime') ?? false);
+    if (notfistTime) {
+      home = const JiApp();
+    }
+
+    setState(() {
+      _toShow = home;
+      _loading = false;
+    });
+  }
   @override
   void initState() {
     // FirebaseAuth.instance.currentUser;
-    _checkIfLoggedIn();
+    _loadPref();
+    _toShow = Container(color: Colors.white, child: Center(child: loader()));
+    
     _themeManager.addListener(themeListener);
     super.initState();
   }
@@ -67,10 +89,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: <String, WidgetBuilder>{
-        '/loginPage': (BuildContext context) => new SignInPage(),
-        '/home': (BuildContext context) => new DrawerPage(),
-      },
+      // routes: <String, WidgetBuilder>{
+      //   '/loginPage': (BuildContext context) => new SignInPage(),
+      //   '/home': (BuildContext context) => new DrawerPage(),
+      // },
       title: 'myClub',
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
@@ -78,7 +100,9 @@ class _MyAppState extends State<MyApp> {
       darkTheme: darkTheme,
       themeMode: ThemeMode.system,
       home: SplashScreenView(
-        navigateRoute: isAuth ? DrawerPage() : SignInPage(),
+        // navigateRoute: JiApp(),
+        navigateRoute: _toShow,
+        // navigateRoute: isAuth ? DrawerPage() : SignInPage(),
         duration: 3000,
         // imageSize: 230,
         imageSize: 60,

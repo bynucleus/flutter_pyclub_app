@@ -1,28 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:myclub/ji/main.dart';
+import 'package:myclub/ui/screen/sign_in.dart';
 import 'package:myclub/util/file_path.dart';
 
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'drawer_page.dart';
 import 'login.dart';
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({Key key}) : super(key: key);
+class IntroPage extends StatefulWidget {
+  const IntroPage({Key key}) : super(key: key);
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _IntroPageState createState() => _IntroPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _IntroPageState extends State<IntroPage> {
   static DateTime now = DateTime.now();
+  bool isAuth = false;
 
   String formattedTime = DateFormat.jm().format(now);
   String formattedDate = "";
 
+
+  void _checkIfLoggedIn() async {
+    SharedPreferences localStorage = await SharedPreferences.getInstance();
+    var token = localStorage.getString('token');
+    if (token != null) {
+      setState(() {
+        isAuth = true;
+      });
+    }
+  }
+  
   @override
   void initState() {
     initializeDateFormatting();
+    _checkIfLoggedIn();
+
     super.initState();
     setState(() {
       formattedDate = DateFormat.yMMMMd("fr_FR").format(now);
@@ -37,13 +55,7 @@ class _SignInPageState extends State<SignInPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: SvgPicture.asset(mainBanner),
-              ),
-            ),
+           
             Expanded(
               flex: 2,
               child: SingleChildScrollView(
@@ -60,6 +72,13 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
             ),
+             Expanded(
+              flex: 1,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SvgPicture.asset(mainBanner),
+              ),
+            ),
           ],
         ),
       ),
@@ -68,32 +87,16 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _topContent() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
         const SizedBox(
           height: 18,
         ),
-        Row(
-          children: <Widget>[
-            Text(
-              'MIAGE CLUB',
+       Text(
+              'JI MIAGE 2023',
+              textAlign : TextAlign.end,
               style: Theme.of(context).textTheme.subtitle1,
             ),
-
-            // Text(
-            //   formattedTime,
-            //   style: Theme.of(context).textTheme.headline6,
-            // ),
-            // const SizedBox(
-            //   width: 30,
-            // ),
-
-            // SvgPicture.asset(electricity),
-            // const SizedBox(
-            //   width: 8,
-            // ),
-          ],
-        ),
         const SizedBox(
           height: 22,
         ),
@@ -109,14 +112,14 @@ class _SignInPageState extends State<SignInPage> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
-          Image.asset(
-            'assets/images/myclubmini.png',
-            width: 60.0,
-            height: 40.0,
-            fit: BoxFit.cover,
-          ),
+          // Image.asset(
+          //   'assets/images/background.png',
+          //   width: 60.0,
+          //   height: 40.0,
+          //   fit: BoxFit.cover,
+          // ),
           // SvgPicture.asset(logo),
           const SizedBox(
             height: 1,
@@ -126,12 +129,23 @@ class _SignInPageState extends State<SignInPage> {
           //   style: Theme.of(context).textTheme.headline5,
           // ),
           const SizedBox(
-            height: 18,
+            height: 1,
           ),
           Text(
-            'myClub est exclusivement reservé aux membres des clubs de la filière Miage de l\'université FHB.\n',
-            style: Theme.of(context).textTheme.bodyText1,
-          )
+            "Journée d'intégration 2023 CAISTAB PLATEAU,",
+              textAlign : TextAlign.end,
+
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+          Text(
+            "la legende de la caverne du savoir continue...",
+              textAlign : TextAlign.end,
+
+            style: Theme.of(context).textTheme.bodyText2,
+          ),
+            const SizedBox(
+            height: 30,
+          ),
         ],
       ),
     );
@@ -151,15 +165,13 @@ class _SignInPageState extends State<SignInPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AuthPage(
-                  register: false,
-                ),
+                builder: (context) => JiApp()
                 // const DrawerPage(),
               ),
             );
           },
           child: Text(
-            'Connexion',
+            'Continuer vers la JI',
             style: Theme.of(context).textTheme.button,
           ),
         ),
@@ -168,16 +180,14 @@ class _SignInPageState extends State<SignInPage> {
         ),
         GestureDetector(
           child: Text(
-            'Créer un compte',
+            'Espace club MIAGE',
             style: Theme.of(context).textTheme.bodyText2,
           ),
           onTap: () {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AuthPage(
-                  register: true,
-                ),
+                builder: (context) => isAuth ? DrawerPage() : SignInPage(),
                 // const DrawerPage(),
               ),
             );

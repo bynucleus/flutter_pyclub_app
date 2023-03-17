@@ -43,6 +43,13 @@ dependencies:
   numberpicker: ^2.1.1
   google_mobile_ads: ^2.3.0
   # device_preview: ^1.0.0
+
+  mask_text_input_formatter:
+  carousel_slider:
+  web_socket_channel:
+  custom_clippers: ^1.0.0
+  qr_flutter: ^4.0.0
+  flutter_barcode_scanner: ^2.0.0
 dev_dependencies:
   change_app_package_name: ^1.0.0
   flutter_launcher_icons: "^0.9.2"
